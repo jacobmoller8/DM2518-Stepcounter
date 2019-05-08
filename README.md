@@ -2,8 +2,9 @@
 
 ## Modules
 
+"npm install xxx" i terminalen
+
 - react-navigation
-- redux
-- redux-persist
-- redux-thunk
 - firebase
+
+"react-native link" i terminalen
