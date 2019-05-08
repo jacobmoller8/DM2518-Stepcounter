@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Button } from "react-native";
 import { withNavigation } from 'react-navigation';
 
 class MainScreen extends Component {
@@ -8,6 +8,8 @@ class MainScreen extends Component {
         return (
             <View style={styles.flexView}>
                 <Text>MainScreen</Text>
+                <Button title="Go to LoginScreen"
+                    onPress={() => this.props.navigation.navigate("LoginScreen")} />
             </View>
         )
     }

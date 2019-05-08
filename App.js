@@ -13,8 +13,8 @@ class App extends Component {
 }
 
 const AppStackNavigator = createStackNavigator({
-  Login: { screen: LoginScreen, navigationOptions: { header: null } },
-  Main: { screen: MainScreen, navigationOptions: { header: null } },
+  LoginScreen: { screen: LoginScreen, navigationOptions: { header: null } },
+  MainScreen: { screen: MainScreen, navigationOptions: { header: null } },
 });
 
 const AppContainer = createAppContainer(AppStackNavigator);
