@@ -6,5 +6,6 @@
 
 - react-navigation
 - firebase
+- react-native-gesture-handler
 
 "react-native link" i terminalen
