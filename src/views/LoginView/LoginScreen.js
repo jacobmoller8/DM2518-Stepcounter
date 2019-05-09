@@ -20,9 +20,6 @@ class LoginScreen extends Component {
                     <View style={styles.loginBackground}>
                         <Text style={styles.titleText}>LOGIN</Text>
 
-
-
-
                         <View style={styles.textBox}>
                             <Icon name="user" style={styles.icon} color={"#525252"} size={30}></Icon>
                             <TextInput style={styles.textInput}
@@ -56,16 +53,9 @@ class LoginScreen extends Component {
                             <Text style={styles.registerText}>REGISTER</Text>
                         </TouchableOpacity>
 
-
-
                     </View>
 
-
-
                 </View>
-
-
-
 
             </KeyboardAvoidingView >
         )

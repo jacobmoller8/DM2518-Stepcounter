@@ -7,5 +7,6 @@
 - react-navigation
 - firebase
 - react-native-gesture-handler
+- react-native-vector-icons
 
 "react-native link" i terminalen
