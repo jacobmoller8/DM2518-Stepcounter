@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import LoginScreen from "./src/views/LoginView/LoginScreen";
+import RegisterScreen from "./src/views/RegisterView/RegisterScreen";
 import MainScreen from "./src/views/MainView/MainScreen";
 
 class App extends Component {
@@ -14,6 +15,7 @@ class App extends Component {
 
 const AppStackNavigator = createStackNavigator({
   LoginScreen: { screen: LoginScreen, navigationOptions: { header: null } },
+  RegisterScreen: { screen: RegisterScreen, navigationOptions: { header: null } },
   MainScreen: { screen: MainScreen, navigationOptions: { header: null } },
 });
 

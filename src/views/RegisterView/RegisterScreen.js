@@ -3,12 +3,11 @@ import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity
 import { withNavigation } from 'react-navigation';
 
 import Icon from "react-native-vector-icons/FontAwesome";
-
 import * as firebase from 'firebase';
 import "firebase/auth";
 
 
-class LoginScreen extends Component {
+class RegisterScreen extends Component {
 
     constructor(props) {
         super(props);
@@ -18,42 +17,24 @@ class LoginScreen extends Component {
         };
     }
 
-    componentDidMount = () => {
-        var firebaseConfig = {
-            apiKey: "AIzaSyCS7vvYOFnnKRn1cTpOq_Lg9mA3Lz9fKGs",
-            authDomain: "dm2518-stepcounter.firebaseapp.com",
-            databaseURL: "https://dm2518-stepcounter.firebaseio.com",
-            projectId: "dm2518-stepcounter",
-            storageBucket: "dm2518-stepcounter.appspot.com",
-            messagingSenderId: "209322474723",
-            appId: "1:209322474723:web:051274ee884a5c71"
-        };
-        firebase.initializeApp(firebaseConfig);
-
-    }
-
-    checkIfAuthorized = () => {
+    onRegisterSubmit = () => {
+        console.log(this.state.email)
+        console.log(this.state.password)
+        firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log(errorCode)
+            console.log(errorMessage)
+        });
         var that = this
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 console.log(user.email + " is now Authorized")
                 that.props.navigation.navigate("MainScreen")
             } else {
-                console.log("No account connected")
+                console.log("Register failed")
             }
         });
-    }
-
-    onLoginSubmit = () => {
-        console.log(this.state.email)
-        console.log(this.state.password)
-        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            console.log(errorCode)
-            console.log(errorMessage)
-        });
-        this.checkIfAuthorized()
     }
 
     render() {
@@ -66,8 +47,8 @@ class LoginScreen extends Component {
                 </View>
 
                 <View style={styles.bootomBackground}>
-                    <View style={styles.loginBackground}>
-                        <Text style={styles.titleText}>LOGIN</Text>
+                    <View style={styles.registerBackground}>
+                        <Text style={styles.titleText}>REGISTER</Text>
 
                         <View style={styles.textBox}>
                             <Icon name="user" style={styles.icon} color={"#525252"} size={30}></Icon>
@@ -96,15 +77,7 @@ class LoginScreen extends Component {
                                 blurOnSubmit={true}>
                             </TextInput>
                         </View>
-                        <TouchableOpacity style={styles.loginButton} onPress={this.onLoginSubmit}>
-                            <Text style={styles.loginText}>LOGIN</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity>
-                            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.registerButton} onPress={() => this.props.navigation.navigate("RegisterScreen")}>
+                        <TouchableOpacity style={styles.registerButton} onPress={this.onRegisterSubmit}>
                             <Text style={styles.registerText}>REGISTER</Text>
                         </TouchableOpacity>
 
@@ -117,7 +90,7 @@ class LoginScreen extends Component {
     }
 }
 
-export default withNavigation(LoginScreen);
+export default withNavigation(RegisterScreen);
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
@@ -150,7 +123,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    loginBackground: {
+    registerBackground: {
         alignItems: "center",
         width: screenWidth * 0.85,
         backgroundColor: "white",
@@ -190,7 +163,7 @@ const styles = StyleSheet.create({
         color: "#525252",
         width: screenWidth * 0.6
     },
-    loginButton: {
+    registerButton: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
@@ -199,6 +172,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#7CC0F1",
         borderRadius: 40,
         marginTop: 20,
+        marginBottom: 30,
         shadowColor: "#000000",
         shadowOffset: {
             width: 2,
@@ -208,31 +182,10 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 12,
     },
-    loginText: {
+    registerText: {
         fontSize: 20,
         color: "white",
         fontWeight: "bold"
     },
-    forgotPasswordText: {
-        marginTop: 15,
-        fontSize: 15,
-        color: "#525252",
-    },
-    registerText: {
-        fontSize: 15,
-        color: "#525252",
-        fontWeight: "bold"
-    },
-    registerButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        height: 30,
-        width: screenWidth * 0.3,
-        borderRadius: 40,
-        marginTop: 20,
-        borderWidth: 2,
-        borderColor: "#7CC0F1",
-        marginBottom: 30
-    },
+
 });
