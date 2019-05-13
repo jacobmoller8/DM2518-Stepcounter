@@ -17,6 +17,26 @@ class RegisterScreen extends Component {
         };
     }
 
+    componentDidMount = () => {
+        firebase.auth().signOut().then(function () {
+            console.log("signed out user")
+        }).catch(function (error) {
+            console.log("ERROR:" + error)
+        });
+    }
+
+    checkIfAuthorized = () => {
+        var that = this
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                console.log(user.email + " is now Authorized")
+                that.props.navigation.navigate("MainTabNavigation")
+            } else {
+                console.log("Register failed")
+            }
+        });
+    }
+
     onRegisterSubmit = () => {
         console.log(this.state.email)
         console.log(this.state.password)
@@ -25,16 +45,8 @@ class RegisterScreen extends Component {
             var errorMessage = error.message;
             console.log(errorCode)
             console.log(errorMessage)
-        });
-        var that = this
-        firebase.auth().onAuthStateChanged(function (user) {
-            if (user) {
-                console.log(user.email + " is now Authorized")
-                that.props.navigation.navigate("MainScreen")
-            } else {
-                console.log("Register failed")
-            }
-        });
+        }).then(this.checkIfAuthorized)
+
     }
 
     render() {

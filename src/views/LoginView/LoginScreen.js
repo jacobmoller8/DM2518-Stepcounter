@@ -30,6 +30,11 @@ class LoginScreen extends Component {
         };
         firebase.initializeApp(firebaseConfig);
 
+        firebase.auth().signOut().then(function () {
+            console.log("signed out user")
+        }).catch(function (error) {
+            console.log("ERROR:" + error)
+        });
     }
 
     checkIfAuthorized = () => {
@@ -37,7 +42,7 @@ class LoginScreen extends Component {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 console.log(user.email + " is now Authorized")
-                that.props.navigation.navigate("MainScreen")
+                that.props.navigation.navigate("MainTabNavigation")
             } else {
                 console.log("No account connected")
             }
@@ -52,8 +57,7 @@ class LoginScreen extends Component {
             var errorMessage = error.message;
             console.log(errorCode)
             console.log(errorMessage)
-        });
-        this.checkIfAuthorized()
+        }).then(this.checkIfAuthorized())
     }
 
     render() {

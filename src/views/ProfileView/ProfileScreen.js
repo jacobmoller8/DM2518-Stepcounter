@@ -2,20 +2,18 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import { withNavigation } from 'react-navigation';
 
-class MainScreen extends Component {
+class ProfileScreen extends Component {
 
     render() {
         return (
             <View style={styles.flexView}>
-                <Text>MainScreen</Text>
-                <Button title="Go to LoginScreen"
-                    onPress={() => this.props.navigation.navigate("LoginScreen")} />
+                <Text>ProfileScreen</Text>
             </View>
         )
     }
 }
 
-export default withNavigation(MainScreen);
+export default withNavigation(ProfileScreen);
 
 
 const styles = StyleSheet.create({
