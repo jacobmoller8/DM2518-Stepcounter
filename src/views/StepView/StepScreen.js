@@ -63,15 +63,20 @@ class StepScreen extends Component {
 			startDate: lastMonth.toISOString()
 		};
 
-
+		let sum = 0
+		let counter = 0
 
 		AppleHealthKit.getDailyStepCountSamples(options, (err, results) => {
 			if (err) {
 				this.setState({ error: err })
 				return;
 			} else {
-				this.setState({ avg: results[1].value })
+				results.forEach(function(item){
+					sum += item.value
+					counter += 1
+				})	
 			}
+			this.setState({ avg: Math.round((sum/counter))})
 		});
 	}
 
