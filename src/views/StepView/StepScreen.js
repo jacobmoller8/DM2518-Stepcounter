@@ -1,77 +1,79 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Platform, NativeAppEventEmitter } from "react-native";
+import { View, Text, StyleSheet, Button, Platform, NativeAppEventEmitter, TouchableOpacity } from "react-native";
 import { withNavigation } from 'react-navigation';
 import AppleHealthKit from 'rn-apple-healthkit';
 
 
 let options = {
-    permissions: {
-        read: ["Height", "Weight", "StepCount", "DateOfBirth", "BodyMassIndex", "ActiveEnergyBurned"],
-        write: ["Height", "Weight", "StepCount", "BodyMassIndex"]
-    }
+	permissions: {
+		read: ["Height", "Weight", "StepCount", "DateOfBirth", "BodyMassIndex", "ActiveEnergyBurned"],
+		write: ["Height", "Weight", "StepCount", "BodyMassIndex"]
+	}
 };
 
 
-let steps = 0;
 
 class StepScreen extends Component {
-
-    componentWillMount() {
-        if (Platform.OS === "ios") {
-            (
-                AppleHealthKit.initHealthKit(options, (err) => { console.log(err) }), AppleHealthKit.initStepCountObserver({}, () => { }))
-            console.log("done 1")
-
-        }
-    }
-    componentDidMount() {
-        this.fetchStepCountData()
-        NativeAppEventEmitter.addListener(
-            'change:steps',
-            (evt) => {
-                this.fetchStepCountData();
-            }
-        );
-    }
-
-    componentWillUnmount() {
-        NativeAppEventEmitter.removeListener('change:steps')
-    }
-
-    fetchStepCountData = () => {
-        let curDate = new Date(this.curday("-"))
-
-        let options = {
-            date: curDate
-        };
-        
-        let test = AppleHealthKit.getStepCount(options, (err, result) => {
-            console.log("err: ", err)
-            steps = result
-        })
-        console.log(test)
-    }
-
-    curday = (sp) => {
-        today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //As January is 0.
-        var yyyy = today.getFullYear();
-        
-        if(dd<10) dd='0'+dd;
-        if(mm<10) mm='0'+mm;
-        return (yyyy+sp+mm+sp+dd);
-        };
+	constructor(props) {
+		super(props)
+		this.state = {
+			steps: 0,
+			error: "working"
+		}
+	}
+	componentWillMount() {
+		if (Platform.OS === "ios") {
+			AppleHealthKit.initHealthKit(options, (err, res) => {
+				if (err) { this.setState({ error: err }); return } else {
+					AppleHealthKit.initStepCountObserver({}, () => { })
+				}
+			})
 
 
-    render() {
-        return (
-            <View style={styles.flexView}>
-                <Text>StepScreen</Text>
-                <Text>Number of steps: {steps}</Text>
-            </View>
-        )
-    }
+		}
+	}
+	componentDidMount() {
+		let sub = NativeAppEventEmitter.addListener(
+			'change:steps',
+			(evt) => {
+				this.fetchStepCountData();
+			}
+		);
+
+		this.setState({ stepObserver: sub })
+	}
+
+	componentWillUnmount() {
+		this.state.stepObserver.remove()
+	}
+
+	fetchStepCountData = () => {
+		AppleHealthKit.getStepCount({}, (err, results) => {
+			if (err) { this.setState({ error: err }); return err }
+			else {
+				console.log("Reached Ress: ", results.value)
+				this.setState({ steps: results.value })
+
+			}
+		})
+
+	}
+
+
+	render() {
+		let curStyle = styles.workingFont
+
+		if (this.state.error !== 'working'){
+			curStyle = styles.errorFont
+		}
+
+		return (
+			<View style={styles.flexView}>
+				<Text style={styles.stepFont}>Number of steps: {this.state.steps}</Text>
+				<Text style={curStyle}>Status: {this.state.error}</Text>
+			</View>
+		)
+	}
 }
 
 export default withNavigation(StepScreen);
@@ -80,11 +82,24 @@ export default withNavigation(StepScreen);
 
 
 const styles = StyleSheet.create({
-
-    flexView: {
-        flex: 1,
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-    }
+	flexView: {
+		flex: 1,
+		flexDirection: "column",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	stepFont: {
+		fontSize: 20,
+		color: "#525252",
+		fontWeight: 'bold'
+	},
+	workingFont: {
+		fontSize: 14,
+		color: "#7CC0F1"
+	},
+	errorFont: {
+		fontSize: 14,
+		color: "red"
+	}
 });
+
