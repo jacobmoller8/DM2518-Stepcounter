@@ -30,6 +30,11 @@ class LoginScreen extends Component {
         };
         firebase.initializeApp(firebaseConfig);
 
+        this.checkIfAuthorized()
+
+    }
+
+    signOutUser = () => {
         firebase.auth().signOut().then(function () {
             console.log("signed out user")
         }).catch(function (error) {
@@ -69,7 +74,7 @@ class LoginScreen extends Component {
                     </View>
                 </View>
 
-                <View style={styles.bootomBackground}>
+                <View style={styles.bottomBackground}>
                     <View style={styles.loginBackground}>
                         <Text style={styles.titleText}>LOGIN</Text>
 
@@ -142,7 +147,6 @@ const styles = StyleSheet.create({
     bottomBackground: {
         height: screenHeight * 0.5,
         width: screenWidth,
-        justifyContent: "center",
         alignItems: "center",
         backgroundColor: "white"
     },
@@ -159,7 +163,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.85,
         backgroundColor: "white",
         borderRadius: 10,
-        marginTop: -40,
+        marginTop: -20,
         shadowColor: "#000000",
         shadowOffset: {
             width: 2,

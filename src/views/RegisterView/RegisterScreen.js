@@ -58,7 +58,7 @@ class RegisterScreen extends Component {
                     </View>
                 </View>
 
-                <View style={styles.bootomBackground}>
+                <View style={styles.bottomBackground}>
                     <View style={styles.registerBackground}>
                         <Text style={styles.titleText}>REGISTER</Text>
 
@@ -123,7 +123,6 @@ const styles = StyleSheet.create({
     bottomBackground: {
         height: screenHeight * 0.5,
         width: screenWidth,
-        justifyContent: "center",
         alignItems: "center",
         backgroundColor: "white"
     },
@@ -140,7 +139,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.85,
         backgroundColor: "white",
         borderRadius: 10,
-        marginTop: -40,
+        marginTop: -20,
         shadowColor: "#000000",
         shadowOffset: {
             width: 2,
