@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Dimensions, KeyboardAvoidingView, icon } from "react-native";
+import { View, Text, StyleSheet, Button, Dimensions, KeyboardAvoidingView } from "react-native";
 import { withNavigation } from 'react-navigation';
+
+import Icon from "react-native-vector-icons/FontAwesome";
 
 class ProfileScreen extends Component {
 
@@ -9,7 +11,7 @@ class ProfileScreen extends Component {
             <KeyboardAvoidingView style={styles.flexView} behavior="padding">
                 <View style={styles.topBackground}>
                     <View style={styles.circle}>
-                        <Icon name="home" color={"#7CC0F1"} size={60}></Icon>
+                        <Icon name="user" color={"#7CC0F1"} size={60}></Icon>
                     </View>
                 </View>
 
@@ -47,5 +49,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "white"
+    },
+    circle: {
+        height: 120,
+        width: 120,
+        backgroundColor: "white",
+        borderRadius: 120,
+        justifyContent: "center",
+        alignItems: "center",
     },
 });
