@@ -13,7 +13,8 @@ class RegisterScreen extends Component {
         super(props);
         this.state = {
             email: "",
-            password: ""
+            password: "",
+            errorMessage: ""
         };
     }
 
@@ -40,10 +41,12 @@ class RegisterScreen extends Component {
     onRegisterSubmit = () => {
         console.log(this.state.email)
         console.log(this.state.password)
+        var that = this
         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
             console.log(errorCode)
+            that.setState({ errorMessage: errorMessage })
             console.log(errorMessage)
         }).then(this.checkIfAuthorized)
 
@@ -89,6 +92,9 @@ class RegisterScreen extends Component {
                                 blurOnSubmit={true}>
                             </TextInput>
                         </View>
+
+                        <Text style={styles.errorText}>{this.state.errorMessage}</Text>
+
                         <TouchableOpacity style={styles.registerButton} onPress={this.onRegisterSubmit}>
                             <Text style={styles.registerText}>REGISTER</Text>
                         </TouchableOpacity>
@@ -174,6 +180,12 @@ const styles = StyleSheet.create({
         color: "#525252",
         width: screenWidth * 0.6
     },
+    errorText: {
+        textAlign: "center",
+        marginTop: 5,
+        fontSize: 15,
+        color: "red",
+    },
     registerButton: {
         flexDirection: "row",
         alignItems: "center",
@@ -182,7 +194,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.6,
         backgroundColor: "#7CC0F1",
         borderRadius: 40,
-        marginTop: 20,
+        marginTop: 5,
         marginBottom: 30,
         shadowColor: "#000000",
         shadowOffset: {

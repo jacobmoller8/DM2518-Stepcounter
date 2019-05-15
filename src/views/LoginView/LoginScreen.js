@@ -14,7 +14,8 @@ class LoginScreen extends Component {
         super(props);
         this.state = {
             email: "",
-            password: ""
+            password: "",
+            errorMessage: ""
         };
     }
 
@@ -31,6 +32,7 @@ class LoginScreen extends Component {
         firebase.initializeApp(firebaseConfig);
 
         this.checkIfAuthorized()
+        //this.signOutUser()
 
     }
 
@@ -57,10 +59,12 @@ class LoginScreen extends Component {
     onLoginSubmit = () => {
         console.log(this.state.email)
         console.log(this.state.password)
+        var that = this
         firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
             console.log(errorCode)
+            that.setState({ errorMessage: errorMessage })
             console.log(errorMessage)
         }).then(this.checkIfAuthorized())
     }
@@ -105,6 +109,9 @@ class LoginScreen extends Component {
                                 blurOnSubmit={true}>
                             </TextInput>
                         </View>
+
+                        <Text style={styles.errorText}>{this.state.errorMessage}</Text>
+
                         <TouchableOpacity style={styles.loginButton} onPress={this.onLoginSubmit}>
                             <Text style={styles.loginText}>LOGIN</Text>
                         </TouchableOpacity>
@@ -198,6 +205,12 @@ const styles = StyleSheet.create({
         color: "#525252",
         width: screenWidth * 0.6
     },
+    errorText: {
+        textAlign: "center",
+        marginTop: 5,
+        fontSize: 15,
+        color: "red",
+    },
     loginButton: {
         flexDirection: "row",
         alignItems: "center",
@@ -206,7 +219,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.6,
         backgroundColor: "#7CC0F1",
         borderRadius: 40,
-        marginTop: 20,
+        marginTop: 5,
         shadowColor: "#000000",
         shadowOffset: {
             width: 2,
@@ -238,9 +251,9 @@ const styles = StyleSheet.create({
         height: 30,
         width: screenWidth * 0.3,
         borderRadius: 40,
-        marginTop: 20,
+        marginTop: 15,
         borderWidth: 2,
         borderColor: "#7CC0F1",
-        marginBottom: 30
+        marginBottom: 20
     },
 });
