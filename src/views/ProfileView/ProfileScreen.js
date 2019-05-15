@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Dimensions, KeyboardAvoidingView, icon } from "react-native";
+import { View, Text, StyleSheet, Button, Dimensions, KeyboardAvoidingView, Icon } from "react-native";
 import { withNavigation } from 'react-navigation';
 
 class ProfileScreen extends Component {
