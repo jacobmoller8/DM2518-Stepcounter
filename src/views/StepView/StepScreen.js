@@ -18,7 +18,8 @@ class StepScreen extends Component {
 		super(props)
 		this.state = {
 			steps: 0,
-			error: "working"
+			error: "working",
+			avg: 0
 		}
 	}
 	componentWillMount() {
@@ -26,6 +27,7 @@ class StepScreen extends Component {
 			AppleHealthKit.initHealthKit(options, (err, res) => {
 				if (err) { this.setState({ error: err }); return } else {
 					AppleHealthKit.initStepCountObserver({}, () => { })
+					this.fetchStepCountAvg();
 				}
 			})
 
@@ -47,11 +49,37 @@ class StepScreen extends Component {
 		this.state.stepObserver.remove()
 	}
 
+
+	fetchStepCountAvg = () => {
+		let curDate = new Date();
+		var lastMonth = new Date();
+
+		var prevDate = lastMonth.getDate() - 30;
+		lastMonth.setDate(prevDate);
+
+		console.log("last month:", lastMonth, " curDate: ", curDate)
+
+		let options = {
+			startDate: lastMonth.toISOString(), // required
+			endDate: (new Date).toISOString() // optional; default now
+		};
+
+
+
+		AppleHealthKit.getDailyStepCountSamples(options, (err, results) => {
+			if (err) {
+				this.setState({ error: err })
+				return;
+			} else {
+				this.setState({ avg: results[0].value })
+			}
+		});
+	}
+
 	fetchStepCountData = () => {
 		AppleHealthKit.getStepCount({}, (err, results) => {
 			if (err) { this.setState({ error: err }); return err }
 			else {
-				console.log("Reached Ress: ", results.value)
 				this.setState({ steps: results.value })
 
 			}
@@ -63,13 +91,14 @@ class StepScreen extends Component {
 	render() {
 		let curStyle = styles.workingFont
 
-		if (this.state.error !== 'working'){
+		if (this.state.error !== 'working') {
 			curStyle = styles.errorFont
 		}
 
 		return (
 			<View style={styles.flexView}>
 				<Text style={styles.stepFont}>Number of steps: {this.state.steps}</Text>
+				<Text style={styles.avgFont}>Daily Average: {this.state.avg}</Text>
 				<Text style={curStyle}>Status: {this.state.error}</Text>
 			</View>
 		)
@@ -90,6 +119,11 @@ const styles = StyleSheet.create({
 	},
 	stepFont: {
 		fontSize: 20,
+		color: "#525252",
+		fontWeight: 'bold'
+	},
+	avgFont: {
+		fontSize: 16,
 		color: "#525252",
 		fontWeight: 'bold'
 	},
