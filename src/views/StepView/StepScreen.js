@@ -60,8 +60,7 @@ class StepScreen extends Component {
 		console.log("last month:", lastMonth, " curDate: ", curDate)
 
 		let options = {
-			startDate: lastMonth.toISOString(), // required
-			endDate: (new Date).toISOString() // optional; default now
+			startDate: lastMonth.toISOString()
 		};
 
 
@@ -71,7 +70,7 @@ class StepScreen extends Component {
 				this.setState({ error: err })
 				return;
 			} else {
-				this.setState({ avg: results[0].value })
+				this.setState({ avg: results[1].value })
 			}
 		});
 	}
