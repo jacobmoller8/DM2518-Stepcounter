@@ -49,7 +49,7 @@ class LoginScreen extends Component {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 console.log(user.email + " is now Authorized")
-                that.props.navigation.navigate("MainTabNavigation")
+                that.props.navigation.navigate("StepScreen")
             } else {
                 console.log("No account connected")
             }

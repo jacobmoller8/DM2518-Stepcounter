@@ -3,7 +3,7 @@ import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import LoginScreen from "./src/views/LoginView/LoginScreen";
 import RegisterScreen from "./src/views/RegisterView/RegisterScreen";
-import MainTabNavigation from "./src/navigation/MainTabNavigation"
+import StepScreen from "./src/views/StepView/StepScreen";
 
 class App extends Component {
   render() {
@@ -16,7 +16,7 @@ class App extends Component {
 const AppStackNavigator = createStackNavigator({
   LoginScreen: { screen: LoginScreen, navigationOptions: { header: null } },
   RegisterScreen: { screen: RegisterScreen, navigationOptions: { header: null } },
-  MainTabNavigation: { screen: MainTabNavigation, navigationOptions: { header: null, gesturesEnabled: false } },
+  StepScreen: { screen: StepScreen, navigationOptions: { header: null, gesturesEnabled: false } },
 });
 
 const AppContainer = createAppContainer(AppStackNavigator);
