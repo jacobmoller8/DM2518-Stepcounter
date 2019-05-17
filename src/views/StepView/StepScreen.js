@@ -1,17 +1,9 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Platform, NativeAppEventEmitter, TouchableOpacity } from "react-native";
 import { withNavigation } from 'react-navigation';
-import AppleHealthKit from 'rn-apple-healthkit';
-
-
-let options = {
-	permissions: {
-		read: ["Height", "Weight", "StepCount", "DateOfBirth", "BodyMassIndex", "ActiveEnergyBurned"],
-		write: ["Height", "Weight", "StepCount", "BodyMassIndex"]
-	}
-};
-
-
+import { connect } from "react-redux";
+import { store } from '../../redux/store/store'
+import { initAppleHK } from '../../redux/actions/stepActions'
 
 class StepScreen extends Component {
 	constructor(props) {
@@ -19,33 +11,32 @@ class StepScreen extends Component {
 		this.state = {
 			steps: 0,
 			error: "working",
-			avg: 0
+			avg: 0,
+			stepObserver: null
 		}
 	}
 	componentWillMount() {
 		if (Platform.OS === "ios") {
-			AppleHealthKit.initHealthKit(options, (err, res) => {
-				if (err) {
-					console.log(err)
-					this.setState({ error: err.message }); return
-				} else {
-					AppleHealthKit.initStepCountObserver({}, () => { })
-					this.fetchStepCountAvg();
-				}
-			})
-
-
+			this.props.initAppleHK;
 		}
 	}
-	componentDidMount() {
-		let sub = NativeAppEventEmitter.addListener(
-			'change:steps',
-			(evt) => {
-				this.fetchStepCountData();
-			}
-		);
 
-		this.setState({ stepObserver: sub })
+	componentWillReceiveProps(nextProp) {
+		if (nextProp.stepInfo.status === "initialized") {
+			this.fetchStepCountData();
+			this.fetchStepCountAvg();
+			if (this.state.stepObserver === null) {
+				let sub = NativeAppEventEmitter.addListener(
+					'change:steps',
+					(evt) => {
+						this.fetchStepCountData();
+					}
+				);
+
+				this.setState({ stepObserver: sub })
+			}
+		}
+
 	}
 
 	componentWillUnmount() {
@@ -69,7 +60,7 @@ class StepScreen extends Component {
 		let sum = 0
 		let counter = 0
 
-		AppleHealthKit.getDailyStepCountSamples(options, (err, results) => {
+		store.getState().stepInfo.HK.getDailyStepCountSamples(options, (err, results) => {
 			if (err) {
 				this.setState({ error: err.message })
 				return;
@@ -84,7 +75,8 @@ class StepScreen extends Component {
 	}
 
 	fetchStepCountData = () => {
-		AppleHealthKit.getStepCount({}, (err, results) => {
+		console.log("reach this")
+		store.getState().stepInfo.HK.getStepCount({}, (err, results) => {
 			if (err) {
 				this.setState({ error: err.message }); return err
 			}
@@ -98,6 +90,7 @@ class StepScreen extends Component {
 
 
 	render() {
+		console.log(this.state)
 		let curStyle = styles.workingFont
 
 		if (this.state.error !== 'working') {
@@ -114,7 +107,22 @@ class StepScreen extends Component {
 	}
 }
 
-export default withNavigation(StepScreen);
+
+const mapStateToProps = state => {
+	return {
+		user: state.user,
+		stepInfo: state.stepInfo
+	}
+};
+
+const mapDispatchToProps = dispatch => {
+	return {
+		initAppleHK: dispatch(initAppleHK())
+
+	}
+};
+
+export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(StepScreen));
 
 
 
