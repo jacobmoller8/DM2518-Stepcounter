@@ -8,5 +8,9 @@
 - firebase
 - react-native-gesture-handler
 - react-native-vector-icons
+- react-redux
+- redux
+- redux-persist
+- redux-thunk
 
 "react-native link" i terminalen
