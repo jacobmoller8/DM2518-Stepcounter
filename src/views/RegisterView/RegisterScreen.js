@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { withNavigation } from 'react-navigation';
 
-import Icon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import * as firebase from 'firebase';
 import "firebase/auth";
 
@@ -12,6 +12,8 @@ class RegisterScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            name: "",
+            pin: "",
             email: "",
             password: "",
             errorMessage: ""
@@ -66,7 +68,34 @@ class RegisterScreen extends Component {
                         <Text style={styles.titleText}>REGISTER</Text>
 
                         <View style={styles.textBox}>
-                            <Icon name="user" style={styles.icon} color={"#525252"} size={30}></Icon>
+                            <Icon name="vpn-key" style={styles.icon} color={"#525252"} size={30}></Icon>
+                            <TextInput
+                                onChangeText={(pin) => this.setState({ pin })}
+                                value={this.state.pin}
+                                style={styles.textInput}
+                                placeholder="Pin Code"
+                                placeholderTextColor="#757575"
+                                keyboardType="numeric"
+                                returnKeyType="next">
+                            </TextInput>
+                        </View>
+
+
+                        <View style={styles.textBox}>
+                            <Icon name="person" style={styles.icon} color={"#525252"} size={30}></Icon>
+                            <TextInput
+                                onChangeText={(name) => this.setState({ name })}
+                                value={this.state.name}
+                                style={styles.textInput}
+                                placeholder="Name"
+                                placeholderTextColor="#757575"
+                                keyboardType="default"
+                                returnKeyType="next">
+                            </TextInput>
+                        </View>
+
+                        <View style={styles.textBox}>
+                            <Icon name="mail" style={styles.icon} color={"#525252"} size={30}></Icon>
                             <TextInput
                                 onChangeText={(email) => this.setState({ email })}
                                 value={this.state.email}
@@ -145,7 +174,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.85,
         backgroundColor: "white",
         borderRadius: 10,
-        marginTop: -20,
+        marginTop: -60,
         shadowColor: "#000000",
         shadowOffset: {
             width: 2,
@@ -172,10 +201,10 @@ const styles = StyleSheet.create({
         borderColor: "#7CC0F1"
     },
     icon: {
-        marginLeft: 20
+        marginLeft: 10
     },
     textInput: {
-        left: 20,
+        left: 10,
         fontSize: 20,
         color: "#525252",
         width: screenWidth * 0.6
