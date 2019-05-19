@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { withNavigation } from 'react-navigation';
-
+import {firebaseConfig} from '../../firebaseConfig'
 import Icon from "react-native-vector-icons/FontAwesome";
 
 import * as firebase from 'firebase';
@@ -19,17 +19,10 @@ class LoginScreen extends Component {
         };
     }
 
+    componentWillMount = () => {
+        firebase.initializeApp(firebaseConfig)
+    }
     componentDidMount = () => {
-        var firebaseConfig = {
-            apiKey: "AIzaSyCS7vvYOFnnKRn1cTpOq_Lg9mA3Lz9fKGs",
-            authDomain: "dm2518-stepcounter.firebaseapp.com",
-            databaseURL: "https://dm2518-stepcounter.firebaseio.com",
-            projectId: "dm2518-stepcounter",
-            storageBucket: "dm2518-stepcounter.appspot.com",
-            messagingSenderId: "209322474723",
-            appId: "1:209322474723:web:051274ee884a5c71"
-        };
-        firebase.initializeApp(firebaseConfig);
 
         this.checkIfAuthorized()
         //this.signOutUser()
