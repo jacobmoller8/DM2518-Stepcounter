@@ -102,6 +102,7 @@ class StepScreen extends Component {
 	}
 
 
+
 	render() {
 		console.log(this.state)
 		let curStyle = styles.workingFont
@@ -121,7 +122,7 @@ class StepScreen extends Component {
 				</View>
 				<View style={styles.profilePicRow}>
 					<View style={styles.line1}></View>
-					<TouchableOpacity style={styles.profilePic}>
+					<TouchableOpacity style={styles.profilePic} onPress={() => this.props.navigation.navigate("ProfileScreen")}>
 						<Icon name="person" color={"#525252"} size={60}></Icon>
 					</TouchableOpacity>
 					<View style={styles.line2}></View>
