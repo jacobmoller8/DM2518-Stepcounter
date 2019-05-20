@@ -36,9 +36,8 @@ class RegisterScreen extends Component {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 console.log(user.email + " is now Authorized")
-                let uid = user.uid
-                console.log("USER ID: ", uid)
-                that.props.regUser()
+                let inputObj = {pin: that.state.pin, name: that.state.name, uid: user.uid}
+                that.props.regUser(inputObj)
                 that.props.navigation.navigate("StepScreen")
             } else {
                 console.log("Register failed")
@@ -154,7 +153,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		regUser: () => dispatch(regUser())
+		regUser: (ownProps) => dispatch(regUser(ownProps))
 
 	}
 };

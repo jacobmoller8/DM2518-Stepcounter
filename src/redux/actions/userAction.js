@@ -6,12 +6,10 @@ import firebase from 'firebase';
 import 'firebase/firestore'
 
 
-export function regUser() {
-    let uid = firebase.auth().currentUser.uid
+export function regUser(inputObj) {
     
     let db = firebase.firestore()
-    let curDate = new Date()
-    let dateString = curDate.toDateString()
+    let curDate = new Date().toLocaleDateString()
 
     return dispatch => {
         dispatch({
@@ -19,8 +17,10 @@ export function regUser() {
             payload: {registered: false}
         })
 
-        db.collection("users").doc(uid).set({
-            registered: dateString
+        db.collection("users").doc(inputObj.uid).set({
+            registered: curDate,
+            group: inputObj.pin,
+            name: inputObj.name
         })
             .then(function () {
                 dispatch({
