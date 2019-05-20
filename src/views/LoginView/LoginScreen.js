@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { withNavigation } from 'react-navigation';
-import {firebaseConfig} from '../../firebaseConfig'
-import Icon from "react-native-vector-icons/FontAwesome";
 
+import Icon from "react-native-vector-icons/MaterialIcons";
+
+import { firebaseConfig } from "../../firebaseConfig";
 import * as firebase from 'firebase';
 import "firebase/auth";
 
@@ -24,7 +25,7 @@ class LoginScreen extends Component {
     }
     componentDidMount = () => {
 
-        // this.checkIfAuthorized()
+        //this.checkIfAuthorized()
         this.signOutUser()
 
     }
@@ -76,7 +77,7 @@ class LoginScreen extends Component {
                         <Text style={styles.titleText}>LOGIN</Text>
 
                         <View style={styles.textBox}>
-                            <Icon name="user" style={styles.icon} color={"#525252"} size={30}></Icon>
+                            <Icon name="mail" style={styles.icon} color={"#525252"} size={30}></Icon>
                             <TextInput
                                 onChangeText={(email) => this.setState({ email })}
                                 value={this.state.email}
@@ -190,10 +191,10 @@ const styles = StyleSheet.create({
         borderColor: "#7CC0F1"
     },
     icon: {
-        marginLeft: 20
+        marginLeft: 10
     },
     textInput: {
-        left: 20,
+        left: 10,
         fontSize: 20,
         color: "#525252",
         width: screenWidth * 0.6
