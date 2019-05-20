@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { withNavigation } from 'react-navigation';
-
+import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome";
+import {regUser} from '../../redux/actions/userAction'
+
 import * as firebase from 'firebase';
 import "firebase/auth";
 
@@ -31,6 +33,9 @@ class RegisterScreen extends Component {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 console.log(user.email + " is now Authorized")
+                let uid = user.uid
+                console.log("USER ID: ", uid)
+                that.props.regUser()
                 that.props.navigation.navigate("StepScreen")
             } else {
                 console.log("Register failed")
@@ -108,8 +113,23 @@ class RegisterScreen extends Component {
     }
 }
 
-export default withNavigation(RegisterScreen);
 
+
+const mapStateToProps = state => {
+	return {
+		user: state.user,
+		stepInfo: state.stepInfo
+	}
+};
+
+const mapDispatchToProps = dispatch => {
+	return {
+		regUser: () => dispatch(regUser())
+
+	}
+};
+
+export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(RegisterScreen));
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 

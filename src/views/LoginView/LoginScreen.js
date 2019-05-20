@@ -24,8 +24,8 @@ class LoginScreen extends Component {
     }
     componentDidMount = () => {
 
-        this.checkIfAuthorized()
-        //this.signOutUser()
+        // this.checkIfAuthorized()
+        this.signOutUser()
 
     }
 
