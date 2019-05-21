@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
+import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
-
-import PicturePicker from "../../components/PicturePicker";
 
 class ProfileScreen extends Component {
 
@@ -19,10 +17,17 @@ class ProfileScreen extends Component {
 
     render() {
         return (
-            <View style={styles.flexView} behavior="padding">
+            <View style={styles.flexView}>
 
-                <Text>Profile Screen</Text>
-                <PicturePicker></PicturePicker>
+                <Image style={styles.image} source={{ uri: this.props.profilePic }}>
+
+                </Image>
+
+                <TouchableOpacity onPress={() => this.props.navigation.navigate("PicturePickerScreen")}>
+                    <Text>
+                        Pick Picture
+                    </Text>
+                </TouchableOpacity>
 
 
             </View >
@@ -32,7 +37,7 @@ class ProfileScreen extends Component {
 
 const mapStateToProps = state => {
     return {
-
+        profilePic: state.user.profilePic
     }
 };
 
@@ -54,5 +59,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
+    image: {
+        height: 200,
+        width: 200,
+        borderRadius: 100
+    }
 
 });

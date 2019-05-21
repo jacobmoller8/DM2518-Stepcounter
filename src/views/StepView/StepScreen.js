@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Platform, NativeAppEventEmitter, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Button, Platform, NativeAppEventEmitter, TouchableOpacity, Dimensions, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 import { store } from '../../redux/store/store'
@@ -123,7 +123,8 @@ class StepScreen extends Component {
 				<View style={styles.profilePicRow}>
 					<View style={styles.line1}></View>
 					<TouchableOpacity style={styles.profilePic} onPress={() => this.props.navigation.navigate("ProfileScreen")}>
-						<Icon name="person" color={"#525252"} size={60}></Icon>
+						<Image style={styles.picture} source={{ uri: this.props.profilePic }}>
+						</Image>
 					</TouchableOpacity>
 					<View style={styles.line2}></View>
 				</View>
@@ -146,7 +147,8 @@ class StepScreen extends Component {
 const mapStateToProps = state => {
 	return {
 		user: state.user,
-		stepInfo: state.stepInfo
+		stepInfo: state.stepInfo,
+		profilePic: state.user.profilePic
 	}
 };
 
@@ -188,6 +190,11 @@ const styles = StyleSheet.create({
 		borderColor: "#525252",
 		alignItems: "center",
 		justifyContent: "center"
+	},
+	picture: {
+		height: 70,
+		width: 70,
+		borderRadius: 35
 	},
 	line1: {
 		width: 10,
