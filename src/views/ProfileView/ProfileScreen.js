@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 
+import PicturePicker from "../../components/PicturePicker";
+
 class ProfileScreen extends Component {
 
     constructor(props) {
@@ -20,6 +22,7 @@ class ProfileScreen extends Component {
             <View style={styles.flexView} behavior="padding">
 
                 <Text>Profile Screen</Text>
+                <PicturePicker></PicturePicker>
 
 
             </View >
