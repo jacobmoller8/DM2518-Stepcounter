@@ -12,5 +12,6 @@
 - redux
 - redux-persist
 - redux-thunk
+- react-native-animated-bar
 
 "react-native link" i terminalen
