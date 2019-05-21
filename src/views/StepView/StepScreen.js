@@ -5,6 +5,8 @@ import { connect } from "react-redux";
 import { store } from '../../redux/store/store'
 import { initAppleHK } from '../../redux/actions/stepActions'
 
+import ProgressBar from "../../components/ProgressBar";
+
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -17,7 +19,8 @@ class StepScreen extends Component {
 			avg: 0,
 			stepObserver: null,
 			date: "",
-			month: ""
+			month: "",
+			goal: 10000
 
 		}
 	}
@@ -89,7 +92,6 @@ class StepScreen extends Component {
 			}
 			else {
 				this.setState({ steps: results.value })
-
 			}
 		})
 	}
@@ -116,10 +118,8 @@ class StepScreen extends Component {
 
 				<Text style={styles.date}>{this.state.date} {this.state.month}</Text>
 
+				<ProgressBar steps={this.state.steps} goal={this.state.goal}></ProgressBar>
 
-				<View style={styles.stepProgressBar}>
-					<Text>Todo Component</Text>
-				</View>
 				<View style={styles.profilePicRow}>
 					<View style={styles.line1}></View>
 					<TouchableOpacity style={styles.profilePic} onPress={() => this.props.navigation.navigate("ProfileScreen")}>
@@ -172,12 +172,6 @@ const styles = StyleSheet.create({
 		marginTop: 40,
 		fontSize: 35,
 		color: "#525252"
-	},
-	stepProgressBar: {
-		marginTop: 10,
-		width: screenWidth * 0.9,
-		height: 70,
-		backgroundColor: "#425891"
 	},
 	profilePicRow: {
 		flexDirection: "row",
