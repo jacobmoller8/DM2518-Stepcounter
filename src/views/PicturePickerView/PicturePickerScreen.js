@@ -27,6 +27,7 @@ class PicturePickerScreen extends Component {
             <View style={styles.flexView}>
                 <CameraRollPicker
                     callback={(array) => this.getSelectedImages(array)}
+                    selectSingleItem={true}
                     maximum={1}
                     groupTypes="All"
                     assetType="Photos" />

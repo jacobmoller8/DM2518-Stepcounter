@@ -40,6 +40,11 @@ export function regUser(inputObj) {
 }
 
 export function updateProfilePic(picture) {
+
+    if (picture === "") {
+        var picture = "https://upload.wikimedia.org/wikipedia/commons/7/7e/Circle-icons-profile.svg"
+    }
+
     return dispatch => {
         dispatch({
             type: UPDATE_PROFILE_PIC,
