@@ -13,5 +13,8 @@
 - redux-persist
 - redux-thunk
 - react-native-animated-bar
+- react-native-background-task
+- react-native-background-fetch@2.0.x
+
 
 "react-native link" i terminalen
