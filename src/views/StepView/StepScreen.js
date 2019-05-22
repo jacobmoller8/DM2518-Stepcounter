@@ -19,7 +19,6 @@ BackgroundTask.define(async () => {
 
 	const response = await store.dispatch(backgroundSync(inputObj))
 
-	BackgroundTask.finish()
   })
 
 class StepScreen extends Component {
@@ -76,13 +75,10 @@ class StepScreen extends Component {
 
 
 	fetchStepCountAvg = () => {
-		let curDate = new Date();
 		var lastMonth = new Date();
 
 		var prevDate = lastMonth.getDate() - 30;
 		lastMonth.setDate(prevDate);
-
-		console.log("last month:", lastMonth, " curDate: ", curDate)
 
 		let options = {
 			startDate: lastMonth.toISOString()
@@ -106,7 +102,6 @@ class StepScreen extends Component {
 	}
 
 	fetchStepCountData = () => {
-		console.log("reach this")
 		store.getState().stepInfo.HK.getStepCount({}, (err, results) => {
 			if (err) {
 				this.setState({ error: err.message });
@@ -131,7 +126,6 @@ class StepScreen extends Component {
 
 
 	render() {
-		console.log(this.state)
 		let curStyle = styles.workingFont
 
 		if (this.state.error !== 'working') {
