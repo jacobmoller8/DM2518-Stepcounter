@@ -106,7 +106,7 @@ class LoginScreen extends Component {
 
                         <Text style={styles.errorText}>{this.state.errorMessage}</Text>
 
-                        <TouchableOpacity style={styles.loginButton} onPress={this.onLoginSubmit}>
+                        <TouchableOpacity style={styles.loginButton} onPress={() => this.onLoginSubmit()}>
                             <Text style={styles.loginText}>LOGIN</Text>
                         </TouchableOpacity>
 
