@@ -12,11 +12,13 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
 
 
-BackgroundTask.define(() => {
+BackgroundTask.define(async () => {
 	let steps = store.getState().stepInfo.steps
 	let uid = store.getState().user.uid
 	let inputObj = {'uid': uid, 'steps': steps}
-	backgroundSync(inputObj)
+
+	const response = await store.dispatch(backgroundSync(inputObj))
+
 	BackgroundTask.finish()
   })
 

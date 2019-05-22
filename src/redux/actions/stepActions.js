@@ -46,26 +46,26 @@ export function initAppleHK() {
 export function backgroundSync(inputObj) {
 
     let db = firebase.firestore()
-    let timeStamp = new Date().getTime()
+    let today = new Date()
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     let curDate = new Date().toLocaleDateString()
     let uid = inputObj.uid
     let steps = inputObj.steps
 
     return dispatch => {
-        console.log("bg-fetch started")
         dispatch({
             type: START_SYNC_TO_FIREBASE,
             payload: { isSyncing: true }
         })
 
-        db.collection("users/", uid, "/days").doc(curDate).set({
-            steps: steps
+        db.collection("users/"+ uid+ "/days").doc(curDate).set({
+            steps: steps,
+            lastSync: time
         })
             .then(function () {
-                console.log("bg-fetch completed")
                 dispatch({
                     type: COMPLETE_SYNC_TO_FIREBASE,
-                    payload: { isSyncing: false, lastSync: timeStamp }
+                    payload: { isSyncing: false, lastSync: time }
                 })
             })
             .catch(function (error) {
