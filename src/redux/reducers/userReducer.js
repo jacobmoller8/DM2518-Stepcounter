@@ -1,4 +1,4 @@
-import { REQUEST_REG_USER, REGISTERED_USER, ERROR_REG_USER, UPDATE_PROFILE_PIC } from '../actions/userAction'
+import { REQUEST_REG_USER, REGISTERED_USER, ERROR_REG_USER, UPDATE_PROFILE_PIC, LOAD_USER } from '../actions/userAction'
 
 
 const initialState = {
@@ -18,6 +18,8 @@ export default function userReducer(state = initialState, { type, payload }) {
             return { ...state, isRegistering: payload.isRegistering }
         case UPDATE_PROFILE_PIC:
             return { ...state, profilePic: payload.profilePic }
+        case LOAD_USER:
+            return { ...state, name: payload.name, uid: payload.uid, email: payload.email, age: payload.age}
         default:
             return state;
     }

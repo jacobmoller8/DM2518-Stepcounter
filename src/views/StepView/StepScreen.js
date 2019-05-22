@@ -4,26 +4,26 @@ import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 import { store } from '../../redux/store/store'
 import { initAppleHK, backgroundSync, updateStepState } from '../../redux/actions/stepActions'
-import {BackgroundTask} from 'react-native-background-task'
+import BackgroundTask from 'react-native-background-task'
 
 import ProgressBar from "../../components/ProgressBar";
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
 
-/*
-TODO: SAVE UID TO USER AT LOGIN TO USE HERE 
+
 BackgroundTask.define(() => {
 	let steps = store.getState().stepInfo.steps
-	let uid = store.getState
+	let uid = store.getState().user.uid
 	let inputObj = {'uid': uid, 'steps': steps}
-	backgroundSync()
+	backgroundSync(inputObj)
 	BackgroundTask.finish()
   })
-*/
+
 class StepScreen extends Component {
 	constructor(props) {
 		super(props)
+
 		this.state = {
 			steps: 0,
 			error: "working",
@@ -37,15 +37,18 @@ class StepScreen extends Component {
 	}
 	componentWillMount() {
 		if (Platform.OS === "ios") {
-			this.props.initAppleHK;
+			this.props.initAppleHK
 		}
 		this.getCurrentDate()
 	}
 
 	componentWillReceiveProps(nextProp) {
 		if (nextProp.stepInfo.status === "initialized") {
-			this.fetchStepCountData();
-			this.fetchStepCountAvg();
+			this.fetchStepCountData()
+
+			if (this.state.avg === 0) {
+				this.fetchStepCountAvg()
+			}
 			if (this.state.stepObserver === null) {
 				let sub = NativeAppEventEmitter.addListener(
 					'change:steps',
@@ -59,6 +62,10 @@ class StepScreen extends Component {
 			}
 		}
 
+	}
+
+	componentDidMount(){
+		BackgroundTask.schedule()
 	}
 
 	componentWillUnmount() {
@@ -96,14 +103,18 @@ class StepScreen extends Component {
 		});
 	}
 
-	fetchStepCountData = () => {	
+	fetchStepCountData = () => {
 		console.log("reach this")
 		store.getState().stepInfo.HK.getStepCount({}, (err, results) => {
 			if (err) {
-				this.setState({ error: err.message }); 
+				this.setState({ error: err.message });
 			}
 			else {
-				this.setState({ steps: results.value })
+				let steps = Math.round(results.value)
+				this.setState({ steps: steps })
+				if (this.props.stepInfo.steps !== steps){
+					this.props.updateStepState(this.state.steps)
+				}
 			}
 		})
 	}
@@ -124,6 +135,7 @@ class StepScreen extends Component {
 		if (this.state.error !== 'working') {
 			curStyle = styles.errorFont
 		}
+
 
 		return (
 			<View style={styles.flexView}>

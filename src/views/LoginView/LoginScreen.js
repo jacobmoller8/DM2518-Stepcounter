@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { withNavigation } from 'react-navigation';
+import { connect } from "react-redux";
+import {loadUser} from "../../redux/actions/userAction"
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -42,7 +44,9 @@ class LoginScreen extends Component {
         var that = this
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
+                let inputObj = {email: user.email, uid: user.uid}
                 console.log(user.email + " is now Authorized")
+                that.props.loadUser(inputObj)
                 that.props.navigation.navigate("StepScreen")
             } else {
                 console.log("No account connected")
@@ -127,7 +131,21 @@ class LoginScreen extends Component {
     }
 }
 
-export default withNavigation(LoginScreen);
+
+const mapStateToProps = state => {
+	return {
+		user: state.user,
+		stepInfo: state.stepInfo
+	}
+};
+
+const mapDispatchToProps = dispatch => {
+	return {
+        loadUser: (ownProps) => dispatch(loadUser(ownProps))
+	}
+};
+
+export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(LoginScreen));
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;

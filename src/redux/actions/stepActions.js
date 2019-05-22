@@ -52,6 +52,7 @@ export function backgroundSync(inputObj) {
     let steps = inputObj.steps
 
     return dispatch => {
+        console.log("bg-fetch started")
         dispatch({
             type: START_SYNC_TO_FIREBASE,
             payload: { isSyncing: true }
@@ -61,6 +62,7 @@ export function backgroundSync(inputObj) {
             steps: steps
         })
             .then(function () {
+                console.log("bg-fetch completed")
                 dispatch({
                     type: COMPLETE_SYNC_TO_FIREBASE,
                     payload: { isSyncing: false, lastSync: timeStamp }
