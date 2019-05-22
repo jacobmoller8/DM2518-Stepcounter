@@ -3,13 +3,24 @@ import { View, Text, StyleSheet, Button, Platform, NativeAppEventEmitter, Toucha
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 import { store } from '../../redux/store/store'
-import { initAppleHK } from '../../redux/actions/stepActions'
+import { initAppleHK, backgroundSync, updateStepState } from '../../redux/actions/stepActions'
+import {BackgroundTask} from 'react-native-background-task'
 
 import ProgressBar from "../../components/ProgressBar";
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
 
+/*
+TODO: SAVE UID TO USER AT LOGIN TO USE HERE 
+BackgroundTask.define(() => {
+	let steps = store.getState().stepInfo.steps
+	let uid = store.getState
+	let inputObj = {'uid': uid, 'steps': steps}
+	backgroundSync()
+	BackgroundTask.finish()
+  })
+*/
 class StepScreen extends Component {
 	constructor(props) {
 		super(props)
@@ -40,6 +51,7 @@ class StepScreen extends Component {
 					'change:steps',
 					(evt) => {
 						this.fetchStepCountData();
+						this.props.updateStepState(this.state.steps)
 					}
 				);
 
@@ -84,11 +96,11 @@ class StepScreen extends Component {
 		});
 	}
 
-	fetchStepCountData = () => {
+	fetchStepCountData = () => {	
 		console.log("reach this")
 		store.getState().stepInfo.HK.getStepCount({}, (err, results) => {
 			if (err) {
-				this.setState({ error: err.message }); return err
+				this.setState({ error: err.message }); 
 			}
 			else {
 				this.setState({ steps: results.value })
@@ -152,7 +164,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		initAppleHK: dispatch(initAppleHK())
+		initAppleHK: dispatch(initAppleHK()),
+		updateStepState: (ownProps) => dispatch(updateStepState(ownProps))
 
 	}
 };
