@@ -2,6 +2,7 @@ import { store } from '../store/store'
 import firebase from 'firebase';
 import 'firebase/firestore'
 import AppleHealthKit from 'rn-apple-healthkit';
+import BackgroundTask from 'react-native-background-task'
 
 export const INIT_APPLE_HK = "INIT_APPLE_HK";
 export const ERROR_INIT_APPLE_HK = "ERROR_INIT_APPLE_HK";
@@ -63,6 +64,7 @@ export function backgroundSync(inputObj) {
             lastSync: time
         })
             .then(function () {
+                BackgroundTask.finish()
                 dispatch({
                     type: COMPLETE_SYNC_TO_FIREBASE,
                     payload: { isSyncing: false, lastSync: time }
