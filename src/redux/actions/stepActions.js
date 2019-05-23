@@ -18,6 +18,8 @@ export const ERROR_CONVERTED_STEPS = "ERROR_CONVERTED_STEPS"
 
 export const UPDATE_STEPS_STATE = "UPDATE_STEPS_STATE"
 
+export const RESET_STEPS = "RESET_STEPS"
+
 
 export function initAppleHK() {
     let options = {
@@ -134,5 +136,11 @@ export function updateStepState(steps, converted) {
             steps: steps,
             convertedSteps: converted
         }
+    }
+}
+
+export function resetSteps(){
+    return {
+        type: RESET_STEPS
     }
 }

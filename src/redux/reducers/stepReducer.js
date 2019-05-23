@@ -1,9 +1,10 @@
-import { INIT_APPLE_HK, INITIALIZED_APPLE_HK, ERROR_INIT_APPLE_HK, START_SYNC_TO_FIREBASE, COMPLETE_SYNC_TO_FIREBASE, ERROR_SYNC_TO_FIREBASE, UPDATE_STEPS_STATE, REQUEST_CONVERTED_STEPS, RECIEVE_CONVERTED_STEPS, ERROR_CONVERTED_STEPS } from '../actions/stepActions'
+import { INIT_APPLE_HK, INITIALIZED_APPLE_HK, ERROR_INIT_APPLE_HK, START_SYNC_TO_FIREBASE, COMPLETE_SYNC_TO_FIREBASE, ERROR_SYNC_TO_FIREBASE, UPDATE_STEPS_STATE, REQUEST_CONVERTED_STEPS, RECIEVE_CONVERTED_STEPS, ERROR_CONVERTED_STEPS, RESET_STEPS } from '../actions/stepActions'
 
 const initialState = {
     status: 'not initialized',
     HK: null,
-    steps: 0
+    steps: 0,
+    convertedSteps: 0
 }
 
 export default function stepReducer(state = initialState, { type, payload }) {
@@ -28,6 +29,8 @@ export default function stepReducer(state = initialState, { type, payload }) {
             return { ...state, conStepStatus: payload.conStepStatus, convertedSteps: payload.convertedSteps };
         case ERROR_CONVERTED_STEPS:
             return { ...state, conStepStatus: payload.conStepStatus };
+        case RESET_STEPS:
+            return initialState;
         default:
             return state;
     }

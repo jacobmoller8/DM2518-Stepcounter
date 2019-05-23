@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { logoutUser } from "../../redux/actions/userAction";
+import { resetSteps } from "../../redux/actions/stepActions"
 
 import * as firebase from 'firebase';
 import "firebase/auth";
@@ -24,6 +25,7 @@ class ProfileScreen extends Component {
 
         firebase.auth().signOut().then(() => {
             this.props.logoutUser()
+            this.props.resetSteps()
             this.props.navigation.navigate("LoginScreen");
         }).catch((err) => {
             console.log("error " + err)
@@ -80,9 +82,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        logoutUser: () => {
-            dispatch(logoutUser())
-        },
+        logoutUser: () => {dispatch(logoutUser())},
+        resetSteps: () => {dispatch(resetSteps())}
+
     }
 };
 
