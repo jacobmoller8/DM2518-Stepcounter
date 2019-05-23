@@ -4,6 +4,7 @@ import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 
 import { loadUser } from "../../redux/actions/userAction";
+import { store } from "../../redux/store/store";
 
 import { firebaseConfig } from "../../firebaseConfig";
 import * as firebase from 'firebase';
@@ -27,10 +28,11 @@ class SplashScreen extends Component {
         var that = this
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
-                let inputObj = { email: user.email, uid: user.uid }
                 console.log(user.email + " is now Authorized")
-                that.props.loadUser(inputObj)
-                that.props.navigation.navigate("StepScreen")
+                if (!store.getState().user.isLoadingUser) {
+                    that.props.loadUser(user.uid)
+                    that.props.navigation.navigate("StepScreen")
+                }
             } else {
                 that.props.navigation.navigate("LoginScreen")
                 console.log("No account connected")
