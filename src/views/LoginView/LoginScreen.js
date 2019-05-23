@@ -7,6 +7,7 @@ import { loadUser } from "../../redux/actions/userAction";
 import { firebaseConfig } from "../../firebaseConfig";
 import * as firebase from 'firebase';
 import "firebase/auth";
+import { store } from "../../redux/store/store";
 
 
 class LoginScreen extends Component {
@@ -25,6 +26,12 @@ class LoginScreen extends Component {
         //this.signOutUser()
     }
 
+    componentWillReceiveProps(nextProp) {
+        if (nextProp.user.uid !== "") {
+            this.props.navigation.navigate("StepScreen")
+        }
+    }
+
     signOutUser = () => {
         firebase.auth().signOut().then(function () {
             console.log("signed out user")
@@ -37,10 +44,10 @@ class LoginScreen extends Component {
         var that = this
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
-                let inputObj = { email: user.email, uid: user.uid }
                 console.log(user.email + " is now Authorized")
-                that.props.loadUser(inputObj)
-                that.props.navigation.navigate("StepScreen")
+                if (!store.getState().user.isLoadingUser) {
+                    that.props.loadUser(user.uid)
+                }
             } else {
                 console.log("No account connected")
             }

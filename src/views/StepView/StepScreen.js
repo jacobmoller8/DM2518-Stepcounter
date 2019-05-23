@@ -66,14 +66,14 @@ class StepScreen extends Component {
   }
 
   componentWillReceiveProps(nextProp) {
-    console.log("NEXT PROP: ", nextProp);
-    if (nextProp.stepInfo.status === "initialized") {
+    console.log("NEXT PROP: ", nextProp)
+    if (nextProp.stepInfo.status === "initialized" && nextProp.user.uid !== "") {
       if (this.state.steps === 0) {
         // Kallas bara om appen startar för första gången, annars tar eventListnern hand om detta
         this.fetchStepCountData();
       }
       if (!nextProp.stepInfo.conStepStatus) {
-        this.props.loadConvertedSteps(this.props.user.uid);
+        this.props.loadConvertedSteps(nextProp.user.uid);
       }
 
       if (nextProp.stepInfo.conStepStatus === "fetched") {
@@ -190,7 +190,7 @@ class StepScreen extends Component {
 
           // Uppdaterar Firebase
           let inputObj = {
-            uid: this.props.user,
+            uid: this.props.user.uid,
             steps: steps,
             convertedSteps: this.state.convertedSteps,
             mode: "active"
@@ -222,7 +222,6 @@ class StepScreen extends Component {
   };
 
   render() {
-    console.log(this.state);
 
     if (this.state.isFetchingSteps) {
       console.log("SHOW SPINNER");
