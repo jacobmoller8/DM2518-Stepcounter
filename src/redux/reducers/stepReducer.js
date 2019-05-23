@@ -23,7 +23,7 @@ export default function stepReducer(state = initialState, { type, payload }) {
         case ERROR_SYNC_TO_FIREBASE:
             return { ...state, isSyncing: payload.isSyncing };
         case UPDATE_STEPS_STATE:
-            return { ...state, steps: payload.steps, lastSync: payload.lastSync };
+            return { ...state, steps: payload.steps, convertedSteps: payload.convertedSteps, lastSync: payload.lastSync };
         default:
             return state;
     }

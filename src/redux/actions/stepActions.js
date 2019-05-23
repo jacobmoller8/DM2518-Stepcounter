@@ -44,14 +44,15 @@ export function initAppleHK() {
     }
 }
 
-export function backgroundSync(inputObj) {
-
+export function syncStepsToFirebase(inputObj) {
     let db = firebase.firestore()
     let today = new Date()
     var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     let curDate = new Date().toLocaleDateString()
+    let mode = inputObj.mode
     let uid = inputObj.uid
     let steps = inputObj.steps
+    let convertedSteps = inputObj.convertedSteps
 
     return dispatch => {
         dispatch({
@@ -61,14 +62,18 @@ export function backgroundSync(inputObj) {
 
         db.collection("users/"+ uid+ "/days").doc(curDate).set({
             steps: steps,
+            convertedSteps: convertedSteps,
             lastSync: time
         })
             .then(function () {
-                BackgroundTask.finish()
                 dispatch({
                     type: COMPLETE_SYNC_TO_FIREBASE,
                     payload: { isSyncing: false, lastSync: time }
                 })
+            }).then(()=>{
+                if (mode === 'background'){
+                    BackgroundTask.finish()
+                }
             })
             .catch(function (error) {
                 console.log("error syncing user steps to database: ", error)
@@ -81,11 +86,12 @@ export function backgroundSync(inputObj) {
 
 }
 
-export function updateStepState(steps) {
+export function updateStepState(steps, converted) {
     return {
         type: UPDATE_STEPS_STATE,
         payload: {
-            steps: steps
+            steps: steps,
+            convertedSteps: converted
         }
     }
 }
