@@ -21,7 +21,7 @@ export default function userReducer(state = initialState, { type, payload }) {
         case LOAD_USER:
             return { ...state, name: payload.name, uid: payload.uid, email: payload.email, age: payload.age }
         case LOGOUT_USER:
-            return { uid: initialState.uid, name: initialState.name, email: initialState.email, profilePic: initialState.profilePic }
+            return initialState
         default:
             return state;
     }

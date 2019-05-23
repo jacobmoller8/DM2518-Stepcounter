@@ -1,11 +1,10 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
+import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, SafeAreaView, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
-import {regUser} from '../../redux/actions/userAction'
+import { regUser } from '../../redux/actions/userAction'
 
 
-import Icon from "react-native-vector-icons/MaterialIcons";
 import * as firebase from 'firebase';
 import "firebase/auth";
 
@@ -36,7 +35,7 @@ class RegisterScreen extends Component {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 console.log(user.email + " is now Authorized")
-                let inputObj = {pin: that.state.pin, name: that.state.name, uid: user.uid}
+                let inputObj = { pin: that.state.pin, name: that.state.name, uid: user.uid }
                 that.props.regUser(inputObj)
                 that.props.navigation.navigate("StepScreen")
             } else {
@@ -63,79 +62,83 @@ class RegisterScreen extends Component {
         return (
             <KeyboardAvoidingView style={styles.flexView} behavior="padding">
                 <View style={styles.topBackground}>
-                    <View style={styles.circle}>
-                        <Icon name="home" color={"#7CC0F1"} size={60}></Icon>
+
+                    <Image
+                        source={require("../../assets/cardNoice.png")}
+                        style={styles.cardNoiceOverlay}
+                    />
+                    <Image
+                        source={require("../../assets/turtle.png")}
+                        style={styles.image}
+                    />
+
+                    <Text style={styles.inputLabel}>Sponsor Code</Text>
+                    <View style={styles.textBox}>
+                        <TextInput
+                            onChangeText={(pin) => this.setState({ pin })}
+                            value={this.state.pin}
+                            style={styles.textInput}
+                            placeholder="1234"
+                            placeholderTextColor="#757575"
+                            keyboardType="numeric"
+                            returnKeyType="next">
+                        </TextInput>
                     </View>
-                </View>
 
-                <View style={styles.bottomBackground}>
-                    <View style={styles.registerBackground}>
-                        <Text style={styles.titleText}>REGISTER</Text>
+                    <Text style={styles.inputLabel}>Name</Text>
+                    <View style={styles.textBox}>
+                        <TextInput
+                            onChangeText={(name) => this.setState({ name })}
+                            value={this.state.name}
+                            style={styles.textInput}
+                            placeholder="John Doe"
+                            placeholderTextColor="#757575"
+                            keyboardType="default"
+                            returnKeyType="next">
+                        </TextInput>
+                    </View>
 
-                        <View style={styles.textBox}>
-                            <Icon name="vpn-key" style={styles.icon} color={"#525252"} size={30}></Icon>
-                            <TextInput
-                                onChangeText={(pin) => this.setState({ pin })}
-                                value={this.state.pin}
-                                style={styles.textInput}
-                                placeholder="Pin Code"
-                                placeholderTextColor="#757575"
-                                keyboardType="numeric"
-                                returnKeyType="next">
-                            </TextInput>
-                        </View>
+                    <Text style={styles.inputLabel}>Email</Text>
+                    <View style={styles.textBox}>
+                        <TextInput
+                            onChangeText={(email) => this.setState({ email })}
+                            value={this.state.email}
+                            style={styles.textInput}
+                            placeholder="john@doe.com"
+                            placeholderTextColor="#757575"
+                            keyboardType="default"
+                            returnKeyType="next">
+                        </TextInput>
+                    </View>
 
-
-                        <View style={styles.textBox}>
-                            <Icon name="person" style={styles.icon} color={"#525252"} size={30}></Icon>
-                            <TextInput
-                                onChangeText={(name) => this.setState({ name })}
-                                value={this.state.name}
-                                style={styles.textInput}
-                                placeholder="Name"
-                                placeholderTextColor="#757575"
-                                keyboardType="default"
-                                returnKeyType="next">
-                            </TextInput>
-                        </View>
-
-                        <View style={styles.textBox}>
-                            <Icon name="mail" style={styles.icon} color={"#525252"} size={30}></Icon>
-                            <TextInput
-                                onChangeText={(email) => this.setState({ email })}
-                                value={this.state.email}
-                                style={styles.textInput}
-                                placeholder="Email"
-                                placeholderTextColor="#757575"
-                                keyboardType="default"
-                                returnKeyType="next">
-                            </TextInput>
-                        </View>
-
-                        <View style={styles.textBox}>
-                            <Icon name="lock" style={styles.icon} color={"#525252"} size={30}></Icon>
-                            <TextInput
-                                onChangeText={(password) => this.setState({ password })}
-                                value={this.state.password}
-                                style={styles.textInput}
-                                placeholder="Password"
-                                placeholderTextColor="#757575"
-                                keyboardType="default"
-                                returnKeyType="done"
-                                secureTextEntry={true}
-                                blurOnSubmit={true}>
-                            </TextInput>
-                        </View>
-
-                        <Text style={styles.errorText}>{this.state.errorMessage}</Text>
-
-                        <TouchableOpacity style={styles.registerButton} onPress={this.onRegisterSubmit}>
-                            <Text style={styles.registerText}>REGISTER</Text>
-                        </TouchableOpacity>
-
+                    <Text style={styles.inputLabel}>Password</Text>
+                    <View style={styles.textBox}>
+                        <TextInput
+                            onChangeText={(password) => this.setState({ password })}
+                            value={this.state.password}
+                            style={styles.textInput}
+                            placeholder="********"
+                            placeholderTextColor="#757575"
+                            keyboardType="default"
+                            returnKeyType="done"
+                            secureTextEntry={true}
+                            blurOnSubmit={true}>
+                        </TextInput>
                     </View>
 
                 </View>
+
+
+
+                <TouchableOpacity style={styles.registerButton} onPress={this.onRegisterSubmit}>
+                    <Text style={styles.registerText}>SIGN IN</Text>
+                </TouchableOpacity>
+
+                <Text style={styles.errorText}>{this.state.errorMessage}</Text>
+
+                <TouchableOpacity style={styles.backButton} onPress={() => this.props.navigation.navigate("LoginScreen")}>
+                    <Text style={styles.registerText}>BACK</Text>
+                </TouchableOpacity>
 
             </KeyboardAvoidingView >
         )
@@ -145,17 +148,17 @@ class RegisterScreen extends Component {
 
 
 const mapStateToProps = state => {
-	return {
-		user: state.user,
-		stepInfo: state.stepInfo
-	}
+    return {
+        user: state.user,
+        stepInfo: state.stepInfo
+    }
 };
 
 const mapDispatchToProps = dispatch => {
-	return {
-		regUser: (ownProps) => dispatch(regUser(ownProps))
+    return {
+        regUser: (ownProps) => dispatch(regUser(ownProps))
 
-	}
+    }
 };
 
 export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(RegisterScreen));
@@ -169,69 +172,44 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     topBackground: {
-        height: screenHeight * 0.5,
+        height: screenHeight * 0.8,
         width: screenWidth,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#7CC0F1"
+        backgroundColor: "#455C97"
     },
-    bottomBackground: {
-        height: screenHeight * 0.5,
+    cardNoiceOverlay: {
+        height: screenHeight * 0.8,
         width: screenWidth,
-        alignItems: "center",
-        backgroundColor: "white"
+        position: "absolute"
     },
-    circle: {
-        height: 120,
-        width: 120,
-        backgroundColor: "white",
-        borderRadius: 120,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    registerBackground: {
-        alignItems: "center",
-        width: screenWidth * 0.85,
-        backgroundColor: "white",
-        borderRadius: 10,
-        marginTop: -60,
-        shadowColor: "#000000",
-        shadowOffset: {
-            width: 2,
-            height: 4,
-        },
-        shadowOpacity: 0.50,
-        shadowRadius: 4,
-        elevation: 12,
-    },
-    titleText: {
+    image: {
         marginTop: 20,
-        color: "#525252",
-        fontSize: 20,
-        fontWeight: "bold"
+    },
+    inputLabel: {
+        fontSize: 15,
+        color: "white",
+        marginTop: 15
     },
     textBox: {
+        backgroundColor: "white",
         flexDirection: "row",
         alignItems: "center",
         height: 50,
         width: screenWidth * 0.8,
-        borderRadius: 10,
-        marginTop: 15,
-        borderWidth: 2,
-        borderColor: "#7CC0F1"
-    },
-    icon: {
-        marginLeft: 10
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: "#455C97"
     },
     textInput: {
         left: 10,
         fontSize: 20,
-        color: "#525252",
+        color: "#455C97",
         width: screenWidth * 0.6
     },
     errorText: {
         textAlign: "center",
-        marginTop: 5,
+        marginTop: -10,
         fontSize: 15,
         color: "red",
     },
@@ -241,9 +219,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         height: 50,
         width: screenWidth * 0.6,
-        backgroundColor: "#7CC0F1",
+        backgroundColor: "white",
         borderRadius: 40,
-        marginTop: 5,
+        marginTop: -25,
         marginBottom: 30,
         shadowColor: "#000000",
         shadowOffset: {
@@ -256,8 +234,25 @@ const styles = StyleSheet.create({
     },
     registerText: {
         fontSize: 20,
-        color: "white",
-        fontWeight: "bold"
+        color: "#455C97"
+    },
+    backButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        height: 50,
+        width: screenWidth * 0.6,
+        backgroundColor: "white",
+        borderRadius: 40,
+        marginTop: 5,
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 2,
+            height: 4,
+        },
+        shadowOpacity: 0.50,
+        shadowRadius: 4,
+        elevation: 12,
     },
 
 });

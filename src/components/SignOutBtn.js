@@ -4,12 +4,14 @@ import * as firebase from 'firebase';
 import "firebase/auth";
 import { withNavigation } from 'react-navigation';
 import LoginScreen from '../views/LoginView/LoginScreen'
+import {resetSteps} from '../redux/actions/stepActions'
+import {store} from '../redux/store/store'
 
 function SignOutBtn(props) {
 
   return (
     <View>
-      <Button onPress={() => firebase.auth().signOut().then(()=> {
+      <Button onPress={() => firebase.auth().signOut().then(()=>{
         props.navigation.navigate("LoginScreen");
       }).catch((err)=> {
         console.log("error " + err)})} title="signOut">
