@@ -80,6 +80,7 @@ class StepScreen extends Component {
         this.fetchStepCountAvg();
       }
       if (this.state.stepObserver === null) {
+        store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
         let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
           this.fetchStepCountData();
         });
@@ -113,9 +114,7 @@ class StepScreen extends Component {
     let sum = 0;
     let counter = 0;
 
-    store
-      .getState()
-      .stepInfo.HK.getDailyStepCountSamples(options, (err, results) => {
+    store.getState().stepInfo.HK.getDailyStepCountSamples(options, (err, results) => {
         if (err) {
           this.setState({ error: err.message });
           return;
