@@ -62,7 +62,7 @@ export default class Cards extends Component {
               style={styles.cardNoiceOverlay}
             />
             <Text style={{ color: "white", fontSize: 80 }}>
-              {this.props.steps * 0.78}
+              {Math.round(this.props.steps * 0.78)}
             </Text>
             <Text style={{ color: "white", fontSize: 20 }}>
               km of car emisson
