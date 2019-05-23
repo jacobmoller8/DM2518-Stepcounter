@@ -3,6 +3,7 @@ export const REGISTERED_USER = "REGISTERED_USER";
 export const ERROR_REG_USER = "ERROR_REG_USER";
 export const UPDATE_PROFILE_PIC = "UPDATE_PROFILE_PIC";
 export const LOAD_USER = "LOAD_USER";
+export const LOGOUT_USER = "LOGOUT_USER";
 
 import firebase from 'firebase';
 import 'firebase/firestore'
@@ -54,12 +55,18 @@ export function updateProfilePic(picture) {
     }
 }
 
-export function loadUser(inputObj){
+export function loadUser(inputObj) {
     return {
         type: LOAD_USER,
         payload: {
             uid: inputObj.uid,
             email: inputObj.email
         }
+    }
+}
+
+export function logoutUser() {
+    return {
+        type: LOGOUT_USER
     }
 }
