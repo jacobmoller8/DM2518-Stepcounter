@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import React, { Component } from "react";
+import { createStackNavigator, createAppContainer } from "react-navigation";
+import { StatusBar } from "react-native";
 
 import LoginScreen from "./src/views/LoginView/LoginScreen";
 import RegisterScreen from "./src/views/RegisterView/RegisterScreen";
@@ -8,19 +9,29 @@ import ProfileScreen from "./src/views/ProfileView/ProfileScreen";
 import PicturePickerScreen from "./src/views/PicturePickerView/PicturePickerScreen";
 
 class App extends Component {
+  componentWillMount() {
+    StatusBar.setHidden(true);
+  }
   render() {
-    return (
-      <AppStackNavigator />
-    );
+    return <AppStackNavigator />;
   }
 }
 
 const AppStackNavigator = createStackNavigator({
   LoginScreen: { screen: LoginScreen, navigationOptions: { header: null } },
-  RegisterScreen: { screen: RegisterScreen, navigationOptions: { header: null } },
-  StepScreen: { screen: StepScreen, navigationOptions: { header: null, gesturesEnabled: false } },
+  RegisterScreen: {
+    screen: RegisterScreen,
+    navigationOptions: { header: null }
+  },
+  StepScreen: {
+    screen: StepScreen,
+    navigationOptions: { header: null, gesturesEnabled: false }
+  },
   ProfileScreen: { screen: ProfileScreen, navigationOptions: { header: null } },
-  PicturePickerScreen: { screen: PicturePickerScreen, navigationOptions: { header: null } },
+  PicturePickerScreen: {
+    screen: PicturePickerScreen,
+    navigationOptions: { header: null }
+  }
 });
 
 const AppContainer = createAppContainer(AppStackNavigator);

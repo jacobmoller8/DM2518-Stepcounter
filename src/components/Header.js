@@ -25,6 +25,11 @@ export default class Header extends Component {
       this.setState({ value: Math.floor(newvalue.value) })
     );
   }
+
+  componentWillUnmount() {
+    this.newStepsTicking.removeAllListeners();
+  }
+
   componentWillReceiveProps() {
     this.animateNewStepsTicking();
     this.animateValue();
