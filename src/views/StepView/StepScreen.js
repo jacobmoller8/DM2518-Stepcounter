@@ -23,17 +23,23 @@ import {
 import BackgroundTask from "react-native-background-task";
 import Cards from "./CardsScroll";
 import ProgressBar from "../../components/ProgressBar";
+import Header from "../../components/Header";
+
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
 
 BackgroundTask.define(async () => {
   let steps = store.getState().stepInfo.steps;
-  let convertedSteps = store.getState().stepInfo.convertedSteps
+  let convertedSteps = store.getState().stepInfo.convertedSteps;
   let uid = store.getState().user.uid;
-  let inputObj = { uid: uid, steps: steps, convertedSteps: convertedSteps, mode: 'background' };
+  let inputObj = {
+    uid: uid,
+    steps: steps,
+    convertedSteps: convertedSteps,
+    mode: "background"
+  };
 
   const response = await store.dispatch(syncStepsToFirebase(inputObj));
-
 });
 
 class StepScreen extends Component {
@@ -60,19 +66,19 @@ class StepScreen extends Component {
   }
 
   componentWillReceiveProps(nextProp) {
-    console.log("NEXT PROP: ", nextProp)
+    console.log("NEXT PROP: ", nextProp);
     if (nextProp.stepInfo.status === "initialized") {
       if (this.state.steps === 0) {
         // Kallas bara om appen startar för första gången, annars tar eventListnern hand om detta
         this.fetchStepCountData();
       }
-      if (!nextProp.stepInfo.conStepStatus){
-        this.props.loadConvertedSteps(this.props.user.uid)
+      if (!nextProp.stepInfo.conStepStatus) {
+        this.props.loadConvertedSteps(this.props.user.uid);
       }
 
-      if(nextProp.stepInfo.conStepStatus === "fetched"){
-        if (nextProp.stepInfo.convertedSteps > this.state.convertedSteps){
-          this.setState({convertedSteps: nextProp.stepInfo.convertedSteps})
+      if (nextProp.stepInfo.conStepStatus === "fetched") {
+        if (nextProp.stepInfo.convertedSteps > this.state.convertedSteps) {
+          this.setState({ convertedSteps: nextProp.stepInfo.convertedSteps });
         }
       }
 
@@ -114,12 +120,14 @@ class StepScreen extends Component {
     let sum = 0;
     let counter = 0;
 
-    store.getState().stepInfo.HK.getDailyStepCountSamples(options, (err, results) => {
+    store
+      .getState()
+      .stepInfo.HK.getDailyStepCountSamples(options, (err, results) => {
         if (err) {
           this.setState({ error: err.message });
           return;
         } else {
-          results.forEach(function (item) {
+          results.forEach(function(item) {
             sum += item.value;
             counter += 1;
           });
@@ -129,24 +137,29 @@ class StepScreen extends Component {
   };
 
   convertSteps = () => {
-    let stepsToConvert = this.state.steps - this.state.convertedSteps
+    let stepsToConvert = this.state.steps - this.state.convertedSteps;
 
     /* DO SOMETHING WITH THE STEPS */
-    console.log("CONVERTED: ", stepsToConvert, " STEPS")
+    console.log("CONVERTED: ", stepsToConvert, " STEPS");
 
     // Uppdaterar lokala state
-    this.setState({ convertedSteps: this.state.steps })
+    this.setState({ convertedSteps: this.state.steps });
 
     // Uppdaterar Redux state
-    this.props.updateStepState(this.state.steps, this.state.steps)
+    this.props.updateStepState(this.state.steps, this.state.steps);
 
     // Uppdaterar Firebase
-    let inputObj = { uid: this.props.user.uid, steps: this.state.steps, convertedSteps: this.state.steps, mode: 'active' };
+    let inputObj = {
+      uid: this.props.user.uid,
+      steps: this.state.steps,
+      convertedSteps: this.state.steps,
+      mode: "active"
+    };
     this.props.syncStepsToFirebase(inputObj);
-  }
+  };
 
   fetchStepCountData = () => {
-    this.setState({ isFetchingSteps: true })
+    this.setState({ isFetchingSteps: true });
     store.getState().stepInfo.HK.getStepCount({}, (err, results) => {
       if (err) {
         this.setState({ error: err.message });
@@ -158,25 +171,31 @@ class StepScreen extends Component {
 
         // Jämför redux med nuvarande
         if (this.props.stepInfo.steps !== steps) {
-
           // ----------------------------------------------------------
           // HÄR KAN EN ANIMATION GÖRAS MED SKILLNADEN PÅ STEPS I LOKALA STATE OCH REDUX INNAN DE SYNKAS
-          let diff = steps - this.props.stepInfo.steps
-          console.log("Difference to animate: ", diff)
+          let diff = steps - this.props.stepInfo.steps;
+          console.log("Difference to animate: ", diff);
           // ----------------------------------------------------------
 
           // Om det är en ny dag och användaren kommer in på appen kanske gårdagens steps finns i redux, då körs denna "if"
           if (steps < this.props.stepInfo.steps) {
-            this.setState({ convertedSteps: 0 })
+            this.setState({ convertedSteps: 0 });
           }
 
           // Uppdaterar Redux
-          this.props.updateStepState(this.state.steps, this.state.convertedSteps);
+          this.props.updateStepState(
+            this.state.steps,
+            this.state.convertedSteps
+          );
 
           // Uppdaterar Firebase
-          let inputObj = { uid: this.props.user, steps: steps, convertedSteps: this.state.convertedSteps, mode: 'active' };
+          let inputObj = {
+            uid: this.props.user,
+            steps: steps,
+            convertedSteps: this.state.convertedSteps,
+            mode: "active"
+          };
           this.props.syncStepsToFirebase(inputObj);
-
         }
       }
     });
@@ -206,9 +225,9 @@ class StepScreen extends Component {
     console.log(this.state);
 
     if (this.state.isFetchingSteps) {
-      console.log("SHOW SPINNER")
+      console.log("SHOW SPINNER");
     } else {
-      console.log("DONT SHOW SPINNER")
+      console.log("DONT SHOW SPINNER");
     }
 
     let curStyle = styles.workingFont;
@@ -218,14 +237,17 @@ class StepScreen extends Component {
 
     return (
       <SafeAreaView style={styles.flexView}>
-        <Text style={styles.date}>
-          {this.state.date} {this.state.month}
-        </Text>
-
-        <ProgressBar steps={this.state.steps} goal={this.state.goal} />
+        <View style={{ height: 135 }}>
+          <Header
+            currentSteps={this.state.steps}
+            lastStepValue={0}
+            lastConvertedSteps={200}
+            date={this.state.date}
+            month={this.state.month}
+          />
+        </View>
 
         <View style={styles.profilePicRow}>
-          <View style={styles.line1} />
           <TouchableOpacity
             style={styles.profilePic}
             onPress={() => this.props.navigation.navigate("ProfileScreen")}
@@ -235,16 +257,20 @@ class StepScreen extends Component {
               source={{ uri: this.props.profilePic }}
             />
           </TouchableOpacity>
-          <View style={styles.line2} />
         </View>
 
-        <Text style={styles.stepFont}>{this.state.steps - this.state.convertedSteps}</Text>
+        <Text style={styles.stepFont}>
+          {this.state.steps - this.state.convertedSteps}
+        </Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>
 
         <Text style={styles.avgFont}>Daily Average: {this.state.avg}</Text>
         <Text style={curStyle}>Status: {this.state.error}</Text>
 
-        <TouchableOpacity style={styles.compensateButton} onPress={() => this.convertSteps()}>
+        <TouchableOpacity
+          style={styles.compensateButton}
+          onPress={() => this.convertSteps()}
+        >
           <Text style={styles.compensateText}>CLIMATE COMPENSATE</Text>
           <Icon2
             name="leaf"
@@ -273,7 +299,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     initAppleHK: dispatch(initAppleHK()),
-    updateStepState: (steps, converted) => dispatch(updateStepState(steps, converted)),
+    updateStepState: (steps, converted) =>
+      dispatch(updateStepState(steps, converted)),
     syncStepsToFirebase: ownProps => dispatch(syncStepsToFirebase(ownProps)),
     loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps))
   };
@@ -301,20 +328,27 @@ const styles = StyleSheet.create({
     color: "#525252"
   },
   profilePicRow: {
+    width: screenWidth,
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    marginTop: -7
+    marginTop: -33,
+    marginLeft: 20
   },
   profilePic: {
-    height: 80,
-    width: 80,
-    backgroundColor: "white",
-    borderRadius: 50,
+    height: 66,
+    width: 66,
+    backgroundColor: "#7DA1F5",
+    borderRadius: 33,
     borderWidth: 1,
-    borderColor: "#525252",
+    borderColor: "#FFF",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    shadowColor: "#000000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.16,
+    shadowRadius: 1
   },
   picture: {
     height: 70,
