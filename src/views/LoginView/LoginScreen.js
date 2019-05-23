@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
+import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, SafeAreaView, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
-import {loadUser} from "../../redux/actions/userAction"
-
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { loadUser } from "../../redux/actions/userAction";
 
 import { firebaseConfig } from "../../firebaseConfig";
 import * as firebase from 'firebase';
@@ -44,7 +42,7 @@ class LoginScreen extends Component {
         var that = this
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
-                let inputObj = {email: user.email, uid: user.uid}
+                let inputObj = { email: user.email, uid: user.uid }
                 console.log(user.email + " is now Authorized")
                 that.props.loadUser(inputObj)
                 that.props.navigation.navigate("StepScreen")
@@ -69,80 +67,85 @@ class LoginScreen extends Component {
 
     render() {
         return (
-            <KeyboardAvoidingView style={styles.flexView} behavior="padding">
-                <View style={styles.topBackground}>
-                    <View style={styles.circle}>
-                        <Icon name="home" color={"#7CC0F1"} size={60}></Icon>
+            <SafeAreaView style={styles.flexView}>
+                <KeyboardAvoidingView style={styles.flexView} behavior="padding">
+
+                    <Text style={styles.welcomeText}>Welcome to the StepApp!</Text>
+
+
+                    <Text style={styles.inputLabel}>Email</Text>
+                    <View style={styles.textBox}>
+                        <TextInput
+                            onChangeText={(email) => this.setState({ email })}
+                            value={this.state.email}
+                            style={styles.textInput}
+                            placeholder="john@doe.com"
+                            placeholderTextColor="#757575"
+                            keyboardType="default"
+                            returnKeyType="next">
+                        </TextInput>
                     </View>
-                </View>
 
-                <View style={styles.bottomBackground}>
-                    <View style={styles.loginBackground}>
-                        <Text style={styles.titleText}>LOGIN</Text>
+                    <Text style={styles.inputLabel}>Password</Text>
+                    <View style={styles.textBox}>
+                        <TextInput
+                            onChangeText={(password) => this.setState({ password })}
+                            value={this.state.password}
+                            style={styles.textInput}
+                            placeholder="********"
+                            placeholderTextColor="#757575"
+                            keyboardType="default"
+                            returnKeyType="done"
+                            secureTextEntry={true}
+                            blurOnSubmit={true}>
+                        </TextInput>
+                    </View>
 
-                        <View style={styles.textBox}>
-                            <Icon name="mail" style={styles.icon} color={"#525252"} size={30}></Icon>
-                            <TextInput
-                                onChangeText={(email) => this.setState({ email })}
-                                value={this.state.email}
-                                style={styles.textInput}
-                                placeholder="Email"
-                                placeholderTextColor="#757575"
-                                keyboardType="default"
-                                returnKeyType="next">
-                            </TextInput>
-                        </View>
+                    <Text style={styles.errorText}>{this.state.errorMessage}</Text>
 
-                        <View style={styles.textBox}>
-                            <Icon name="lock" style={styles.icon} color={"#525252"} size={30}></Icon>
-                            <TextInput
-                                onChangeText={(password) => this.setState({ password })}
-                                value={this.state.password}
-                                style={styles.textInput}
-                                placeholder="Password"
-                                placeholderTextColor="#757575"
-                                keyboardType="default"
-                                returnKeyType="done"
-                                secureTextEntry={true}
-                                blurOnSubmit={true}>
-                            </TextInput>
-                        </View>
-
-                        <Text style={styles.errorText}>{this.state.errorMessage}</Text>
-
+                    <View style={styles.cardAndLogin}>
                         <TouchableOpacity style={styles.loginButton} onPress={() => this.onLoginSubmit()}>
-                            <Text style={styles.loginText}>LOGIN</Text>
+                            <Text style={styles.loginText}>LOG IN</Text>
                         </TouchableOpacity>
+                        <View style={styles.card}>
+                            <TouchableOpacity>
+                                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                            </TouchableOpacity>
+                            <Image
+                                source={require("../../assets/cardNoice.png")}
+                                style={styles.cardNoiceOverlay}
+                            />
+                            <Image
+                                source={require("../../assets/turtle.png")}
+                            />
 
-                        <TouchableOpacity>
-                            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.registerButton} onPress={() => this.props.navigation.navigate("RegisterScreen")}>
+                                <Text style={styles.registerText}>SIGN UP</Text>
+                            </TouchableOpacity>
+                        </View>
 
-                        <TouchableOpacity style={styles.registerButton} onPress={() => this.props.navigation.navigate("RegisterScreen")}>
-                            <Text style={styles.registerText}>REGISTER</Text>
-                        </TouchableOpacity>
 
                     </View>
 
-                </View>
+                </KeyboardAvoidingView >
+            </SafeAreaView>
 
-            </KeyboardAvoidingView >
         )
     }
 }
 
 
 const mapStateToProps = state => {
-	return {
-		user: state.user,
-		stepInfo: state.stepInfo
-	}
+    return {
+        user: state.user,
+        stepInfo: state.stepInfo
+    }
 };
 
 const mapDispatchToProps = dispatch => {
-	return {
+    return {
         loadUser: (ownProps) => dispatch(loadUser(ownProps))
-	}
+    }
 };
 
 export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(LoginScreen));
@@ -153,68 +156,34 @@ const screenWidth = Dimensions.get('window').width;
 const styles = StyleSheet.create({
 
     flexView: {
-        justifyContent: "center",
+        flex: 1,
         alignItems: "center",
     },
-    topBackground: {
-        height: screenHeight * 0.5,
-        width: screenWidth,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#7CC0F1"
+    welcomeText: {
+        fontSize: 25,
+        color: "#455C97",
+        marginTop: 30,
+        marginBottom: screenHeight * 0.1
+
     },
-    bottomBackground: {
-        height: screenHeight * 0.5,
-        width: screenWidth,
-        alignItems: "center",
-        backgroundColor: "white"
-    },
-    circle: {
-        height: 120,
-        width: 120,
-        backgroundColor: "white",
-        borderRadius: 120,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    loginBackground: {
-        alignItems: "center",
-        width: screenWidth * 0.85,
-        backgroundColor: "white",
-        borderRadius: 10,
-        marginTop: -20,
-        shadowColor: "#000000",
-        shadowOffset: {
-            width: 2,
-            height: 4,
-        },
-        shadowOpacity: 0.50,
-        shadowRadius: 4,
-        elevation: 12,
-    },
-    titleText: {
-        marginTop: 20,
-        color: "#525252",
-        fontSize: 20,
-        fontWeight: "bold"
+    inputLabel: {
+        fontSize: 15,
+        color: "#455C97",
+        marginTop: 15
     },
     textBox: {
         flexDirection: "row",
         alignItems: "center",
         height: 50,
         width: screenWidth * 0.8,
-        borderRadius: 10,
-        marginTop: 15,
-        borderWidth: 2,
-        borderColor: "#7CC0F1"
-    },
-    icon: {
-        marginLeft: 10
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: "#455C97"
     },
     textInput: {
         left: 10,
         fontSize: 20,
-        color: "#525252",
+        color: "#455C97",
         width: screenWidth * 0.6
     },
     errorText: {
@@ -223,49 +192,61 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: "red",
     },
+    cardAndLogin: {
+        alignItems: "center",
+        position: "absolute",
+        bottom: 10,
+    },
     loginButton: {
+        backgroundColor: "white",
+        width: screenWidth * 0.88,
+        height: 55,
+        borderRadius: 50,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        height: 50,
-        width: screenWidth * 0.6,
-        backgroundColor: "#7CC0F1",
-        borderRadius: 40,
-        marginTop: 5,
         shadowColor: "#000000",
         shadowOffset: {
-            width: 2,
-            height: 4,
+            width: 1,
+            height: 2
         },
-        shadowOpacity: 0.50,
-        shadowRadius: 4,
-        elevation: 12,
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        elevation: 1,
+        zIndex: 103,
     },
     loginText: {
         fontSize: 20,
-        color: "white",
-        fontWeight: "bold"
+        color: "#455C97",
+    },
+    card: {
+        backgroundColor: "#455C97",
+        width: screenWidth - 10,
+        height: 230,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 10,
+        marginTop: -27.5
+    },
+    cardNoiceOverlay: {
+        borderRadius: 10,
+        width: screenWidth - 10,
+        height: 230,
+        position: "absolute"
     },
     forgotPasswordText: {
         marginTop: 15,
+        marginBottom: 10,
         fontSize: 15,
-        color: "#525252",
+        color: "white",
+        zIndex: 101
     },
     registerText: {
+        marginTop: 30,
         fontSize: 15,
-        color: "#525252",
-        fontWeight: "bold"
+        color: "white",
+        fontWeight: "bold",
+        textDecorationLine: "underline"
     },
-    registerButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        height: 30,
-        width: screenWidth * 0.3,
-        borderRadius: 40,
-        marginTop: 15,
-        borderWidth: 2,
-        borderColor: "#7CC0F1",
-        marginBottom: 20
-    },
+
 });

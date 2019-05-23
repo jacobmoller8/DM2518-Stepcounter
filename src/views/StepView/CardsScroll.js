@@ -58,7 +58,7 @@ export default class Cards extends Component {
         >
           <View style={styles.card}>
             <Image
-              source={require("./cardNoice.png")}
+              source={require("../../assets/cardNoice.png")}
               style={styles.cardNoiceOverlay}
             />
             <Text style={{ color: "white", fontSize: 80 }}>
@@ -72,7 +72,7 @@ export default class Cards extends Component {
           </View>
           <View style={styles.card}>
             <Image
-              source={require("./cardNoice.png")}
+              source={require("../../assets/cardNoice.png")}
               style={styles.cardNoiceOverlay}
             />
             <Text style={{ color: "white", fontSize: 80 }}>89,9</Text>
@@ -84,7 +84,7 @@ export default class Cards extends Component {
           </View>
           <View style={styles.card}>
             <Image
-              source={require("./cardNoice.png")}
+              source={require("../../assets/cardNoice.png")}
               style={styles.cardNoiceOverlay}
             />
             <Text style={{ color: "white", fontSize: 80 }}>162,8</Text>
