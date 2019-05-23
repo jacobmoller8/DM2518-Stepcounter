@@ -190,7 +190,7 @@ class StepScreen extends Component {
 
           // Uppdaterar Firebase
           let inputObj = {
-            uid: this.props.user,
+            uid: this.props.user.uid,
             steps: steps,
             convertedSteps: this.state.convertedSteps,
             mode: "active"
