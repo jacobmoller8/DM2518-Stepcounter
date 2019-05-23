@@ -5,7 +5,7 @@ const initialState = {
     uid: "",
     name: "",
     email: "",
-    profilePic: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Circle-icons-profile.svg"
+    profilePic: "https://freepngimg.com/thumb/mario/20698-7-mario-transparent-background.png"
 }
 
 export default function userReducer(state = initialState, { type, payload }) {
