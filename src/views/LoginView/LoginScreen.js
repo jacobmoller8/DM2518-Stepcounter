@@ -20,14 +20,9 @@ class LoginScreen extends Component {
         };
     }
 
-    componentWillMount = () => {
-        firebase.initializeApp(firebaseConfig)
-    }
     componentDidMount = () => {
-
-        this.checkIfAuthorized()
+        //this.checkIfAuthorized()
         //this.signOutUser()
-
     }
 
     signOutUser = () => {
