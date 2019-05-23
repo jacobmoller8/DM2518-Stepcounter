@@ -17,7 +17,8 @@ import { store } from "../../redux/store/store";
 import {
   initAppleHK,
   syncStepsToFirebase,
-  updateStepState
+  updateStepState,
+  loadConvertedSteps
 } from "../../redux/actions/stepActions";
 import BackgroundTask from "react-native-background-task";
 import Cards from "./CardsScroll";
@@ -59,10 +60,20 @@ class StepScreen extends Component {
   }
 
   componentWillReceiveProps(nextProp) {
+    console.log("NEXT PROP: ", nextProp)
     if (nextProp.stepInfo.status === "initialized") {
       if (this.state.steps === 0) {
         // Kallas bara om appen startar för första gången, annars tar eventListnern hand om detta
         this.fetchStepCountData();
+      }
+      if (!nextProp.stepInfo.conStepStatus){
+        this.props.loadConvertedSteps(this.props.user.uid)
+      }
+
+      if(nextProp.stepInfo.conStepStatus === "fetched"){
+        if (nextProp.stepInfo.convertedSteps > this.state.convertedSteps){
+          this.setState({convertedSteps: nextProp.stepInfo.convertedSteps})
+        }
       }
 
       if (this.state.avg === 0) {
@@ -200,7 +211,7 @@ class StepScreen extends Component {
     } else {
       console.log("DONT SHOW SPINNER")
     }
-    
+
     let curStyle = styles.workingFont;
     if (this.state.error !== "working") {
       curStyle = styles.errorFont;
@@ -264,7 +275,8 @@ const mapDispatchToProps = dispatch => {
   return {
     initAppleHK: dispatch(initAppleHK()),
     updateStepState: (steps, converted) => dispatch(updateStepState(steps, converted)),
-    syncStepsToFirebase: ownProps => dispatch(syncStepsToFirebase(ownProps))
+    syncStepsToFirebase: ownProps => dispatch(syncStepsToFirebase(ownProps)),
+    loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps))
   };
 };
 

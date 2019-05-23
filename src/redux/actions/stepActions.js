@@ -11,7 +11,13 @@ export const INITIALIZED_APPLE_HK = "INITIALIZED_APPLE_HK";
 export const START_SYNC_TO_FIREBASE = "START_SYNC_TO_FIREBASE"
 export const COMPLETE_SYNC_TO_FIREBASE = "COMPLETE_SYNC_TO_FIREBASE"
 export const ERROR_SYNC_TO_FIREBASE = "ERROR_SYNC_TO_FIREBASE"
+
+export const REQUEST_CONVERTED_STEPS = "REQUEST_CONVERTED_STEPS"
+export const RECIEVE_CONVERTED_STEPS = "RECIEVE_CONVERTED_STEPS"
+export const ERROR_CONVERTED_STEPS = "ERROR_CONVERTED_STEPS"
+
 export const UPDATE_STEPS_STATE = "UPDATE_STEPS_STATE"
+
 
 export function initAppleHK() {
     let options = {
@@ -60,7 +66,7 @@ export function syncStepsToFirebase(inputObj) {
             payload: { isSyncing: true }
         })
 
-        db.collection("users/"+ uid+ "/days").doc(curDate).set({
+        db.collection("users/" + uid + "/days").doc(curDate).set({
             steps: steps,
             convertedSteps: convertedSteps,
             lastSync: time
@@ -70,8 +76,8 @@ export function syncStepsToFirebase(inputObj) {
                     type: COMPLETE_SYNC_TO_FIREBASE,
                     payload: { isSyncing: false, lastSync: time }
                 })
-            }).then(()=>{
-                if (mode === 'background'){
+            }).then(() => {
+                if (mode === 'background') {
                     BackgroundTask.finish()
                 }
             })
@@ -84,6 +90,41 @@ export function syncStepsToFirebase(inputObj) {
             });
     }
 
+}
+
+export function loadConvertedSteps(uid) {
+    let db = firebase.firestore()
+    let curDate = new Date().toLocaleDateString()
+    var docRef = db.collection("users/" + uid + "/days/").doc(curDate);
+    return dispatch => {
+
+        dispatch({
+            type: REQUEST_CONVERTED_STEPS,
+            payload: { conStepStatus: 'fetching' }
+        })
+
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                dispatch({
+                    type: RECIEVE_CONVERTED_STEPS,
+                    payload: { conStepStatus: 'fetched', convertedSteps: doc.data().convertedSteps }
+                })
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                dispatch({
+                    type: ERROR_CONVERTED_STEPS,
+                    payload: { conStepStatus: 'error' }
+                })
+            }
+        }).catch(function (error) {
+            console.log("Error getting document:", error);
+            dispatch({
+                type: ERROR_CONVERTED_STEPS,
+                payload: { conStepStatus: 'error' }
+            })
+        });
+    }
 }
 
 export function updateStepState(steps, converted) {
