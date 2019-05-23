@@ -23,6 +23,7 @@ import BackgroundTask from "react-native-background-task";
 import Cards from "./CardsScroll";
 
 import ProgressBar from "../../components/ProgressBar";
+import Header from "../../components/Header";
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
@@ -161,14 +162,17 @@ class StepScreen extends Component {
 
     return (
       <SafeAreaView style={styles.flexView}>
-        <Text style={styles.date}>
-          {this.state.date} {this.state.month}
-        </Text>
-
-        <ProgressBar steps={this.state.steps} goal={this.state.goal} />
+        <View style={{ height: 135 }}>
+          <Header
+            currentSteps={this.state.steps}
+            lastStepValue={0}
+            lastConvertedSteps={200}
+            date={this.state.date}
+            month={this.state.month}
+          />
+        </View>
 
         <View style={styles.profilePicRow}>
-          <View style={styles.line1} />
           <TouchableOpacity
             style={styles.profilePic}
             onPress={() => this.props.navigation.navigate("ProfileScreen")}
@@ -178,7 +182,6 @@ class StepScreen extends Component {
               source={{ uri: this.props.profilePic }}
             />
           </TouchableOpacity>
-          <View style={styles.line2} />
         </View>
 
         <Text style={styles.stepFont}>{this.state.steps}</Text>
@@ -242,20 +245,27 @@ const styles = StyleSheet.create({
     color: "#525252"
   },
   profilePicRow: {
+    width: screenWidth,
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    marginTop: -7
+    marginTop: -33,
+    marginLeft: 20
   },
   profilePic: {
-    height: 80,
-    width: 80,
-    backgroundColor: "white",
-    borderRadius: 50,
+    height: 66,
+    width: 66,
+    backgroundColor: "#7DA1F5",
+    borderRadius: 33,
     borderWidth: 1,
-    borderColor: "#525252",
+    borderColor: "#FFF",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    shadowColor: "#000000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.16,
+    shadowRadius: 1
   },
   picture: {
     height: 70,
