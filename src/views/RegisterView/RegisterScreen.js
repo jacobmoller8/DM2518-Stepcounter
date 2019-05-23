@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
-import {regUser} from '../../redux/actions/userAction'
+import { regUser } from '../../redux/actions/userAction'
 
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import * as firebase from 'firebase';
 import "firebase/auth";
+import { store } from "../../redux/store/store";
 
 
 class RegisterScreen extends Component {
@@ -31,14 +32,21 @@ class RegisterScreen extends Component {
         });
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.user.uid !== "") {
+            this.props.navigation.navigate("StepScreen")
+        }
+    }
+
     checkIfAuthorized = () => {
         var that = this
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 console.log(user.email + " is now Authorized")
-                let inputObj = {pin: that.state.pin, name: that.state.name, uid: user.uid}
-                that.props.regUser(inputObj)
-                that.props.navigation.navigate("StepScreen")
+                let inputObj = { pin: that.state.pin, name: that.state.name, uid: user.uid, email: that.state.email }
+                if (!store.getState().user.registered) {
+                    that.props.regUser(inputObj)
+                }
             } else {
                 console.log("Register failed")
             }
@@ -145,17 +153,17 @@ class RegisterScreen extends Component {
 
 
 const mapStateToProps = state => {
-	return {
-		user: state.user,
-		stepInfo: state.stepInfo
-	}
+    return {
+        user: state.user,
+        stepInfo: state.stepInfo
+    }
 };
 
 const mapDispatchToProps = dispatch => {
-	return {
-		regUser: (ownProps) => dispatch(regUser(ownProps))
+    return {
+        regUser: (ownProps) => dispatch(regUser(ownProps))
 
-	}
+    }
 };
 
 export default withNavigation(connect(mapStateToProps, mapDispatchToProps)(RegisterScreen));

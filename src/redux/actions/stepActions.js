@@ -97,7 +97,7 @@ export function syncStepsToFirebase(inputObj) {
 export function loadConvertedSteps(uid) {
     let db = firebase.firestore()
     let curDate = new Date().toLocaleDateString()
-    var docRef = db.collection("users/" + uid + "/days/").doc(curDate);
+    var docRef = db.collection("users/" + uid + "/days").doc(curDate);
     return dispatch => {
 
         dispatch({
@@ -116,14 +116,14 @@ export function loadConvertedSteps(uid) {
                 console.log("No such document!");
                 dispatch({
                     type: ERROR_CONVERTED_STEPS,
-                    payload: { conStepStatus: 'error' }
+                    payload: { conStepStatus: 'error1' }
                 })
             }
         }).catch(function (error) {
             console.log("Error getting document:", error);
             dispatch({
                 type: ERROR_CONVERTED_STEPS,
-                payload: { conStepStatus: 'error' }
+                payload: { conStepStatus: 'error2' }
             })
         });
     }
