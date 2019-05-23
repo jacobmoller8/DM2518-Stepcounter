@@ -61,18 +61,14 @@ export default class Cards extends Component {
               source={require("./cardNoice.png")}
               style={styles.cardNoiceOverlay}
             />
-            <Text style={{ color: "white", fontSize: 80 }}>52,6</Text>
+            <Text style={{ color: "white", fontSize: 80 }}>
+              {this.props.steps * 0.78}
+            </Text>
             <Text style={{ color: "white", fontSize: 20 }}>
               km of car emisson
             </Text>
-            <Text
-              style={{
-                color: "white",
-                fontSize: 15
-              }}
-            >
-              Today
-            </Text>
+            <View style={styles.lineForTime} />
+            <Text style={styles.whenText}>today</Text>
           </View>
           <View style={styles.card}>
             <Image
@@ -83,14 +79,8 @@ export default class Cards extends Component {
             <Text style={{ color: "white", fontSize: 20 }}>
               km of car emisson
             </Text>
-            <Text
-              style={{
-                color: "white",
-                fontSize: 15
-              }}
-            >
-              This Week
-            </Text>
+            <View style={styles.lineForTime} />
+            <Text style={styles.whenText}> this Week</Text>
           </View>
           <View style={styles.card}>
             <Image
@@ -101,18 +91,17 @@ export default class Cards extends Component {
             <Text style={{ color: "white", fontSize: 20 }}>
               km of car emisson
             </Text>
-            <Text
-              style={{
-                color: "white",
-                fontSize: 15
-              }}
-            >
-              All time
-            </Text>
+            <View style={styles.lineForTime} />
+            <Text style={styles.whenText}>all time</Text>
           </View>
         </ScrollView>
         <View
-          style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "center",
+            bottom: 10
+          }}
         >
           <Animated.View
             style={[styles.dots, { backgroundColor: dotOneBackgroundColor }]}
@@ -135,7 +124,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     width: screenWidth - 10,
-    height: 250,
+    height: 230,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10
@@ -144,7 +133,7 @@ const styles = StyleSheet.create({
   cardNoiceOverlay: {
     borderRadius: 10,
     width: screenWidth - 10,
-    height: 250,
+    height: 230,
     position: "absolute"
   },
 
@@ -154,9 +143,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#FFF",
     borderColor: "#7CA92E",
-    marginTop: 3,
+    marginTop: 0,
     marginLeft: 5,
     marginRight: 5,
     borderWidth: 1
+  },
+
+  lineForTime: {
+    height: 1,
+    width: screenWidth * 0.34,
+    backgroundColor: "#FFF",
+    position: "absolute",
+    bottom: 28
+  },
+
+  whenText: {
+    color: "white",
+    fontSize: 15,
+    position: "absolute",
+    bottom: 7
   }
 });
