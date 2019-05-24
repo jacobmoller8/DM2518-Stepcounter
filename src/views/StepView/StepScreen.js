@@ -52,8 +52,6 @@ class StepScreen extends Component {
     super(props);
 
     this.state = {
-      steps: 0,
-      convertedSteps: 0,
       error: "working",
       stepObserver: null,
       date: "",
@@ -81,7 +79,7 @@ class StepScreen extends Component {
 
   componentDidMount() {
     if (this.state.stepObserver === null) {
-      store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
+      store.getState().stepInfo.HK.initStepCountObserver({}, () => { });
       let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
         this.fetchStepCountData();
       });
@@ -90,6 +88,16 @@ class StepScreen extends Component {
     }
     BackgroundTask.schedule();
     this.animateStepsToUseTickerValue();
+  }
+
+  componentWillReceiveProps(nextProp) {
+    console.log("nextProp: ", nextProp)
+    console.log(this.state.initialStepFetch, this.state.isFetchingSteps)
+    if (!this.state.initialStepFetch && !this.state.isFetchingSteps) {
+      console.log("REACH")
+      this.fetchStepCountData();
+      this.setState({ initialStepFetch: true, stepsToConvert: this.props.stepInfo.steps - this.props.stepInfo.convertedSteps })
+    }
   }
 
   componentWillUnmount() {
@@ -104,21 +112,14 @@ class StepScreen extends Component {
     /* DO SOMETHING WITH THE STEPS */
     console.log("CONVERTED: ", this.state.stepsToConvert, " STEPS");
 
-    // Uppdaterar lokala state, nu måste även history hämtas på nytt
-    this.setState({
-      convertedSteps: this.state.steps,
-      stepsToConvert: 0,
-      fetchedHistory: false
-    });
-
     // Uppdaterar Redux state
-    this.props.updateStepState(this.state.steps, this.state.steps);
+    this.props.updateStepState(this.props.stepInfo.steps, this.props.stepInfo.steps);
 
     // Uppdaterar Firebase
     let inputObj = {
       uid: this.props.user.uid,
-      steps: this.state.steps,
-      convertedSteps: this.state.steps,
+      steps: this.props.stepInfo.steps,
+      convertedSteps: this.props.stepInfo.steps,
       mode: "active"
     };
     this.props.syncStepsToFirebase(inputObj);
@@ -126,20 +127,12 @@ class StepScreen extends Component {
 
   fetchStepCountData = () => {
     this.setState({ isFetchingSteps: true });
-    
+
     store.getState().stepInfo.HK.getStepCount({}, (err, results) => {
       if (err) {
         this.setState({ error: err.message });
       } else {
         let steps = Math.round(results.value);
-
-        // Uppdaterar State i komponenten, Nu måste även History hämtas på nytt
-        this.setState({
-          steps: steps,
-          isFetchingSteps: false,
-          fetchedHistory: false,
-          stepsToConvert: steps - this.props.stepInfo.convertedSteps
-        });
 
         // Jämför redux med nuvarande
         if (this.props.stepInfo.steps !== steps) {
@@ -157,22 +150,25 @@ class StepScreen extends Component {
 
           // Uppdaterar Redux
           this.props.updateStepState(
-            this.state.steps,
-            this.state.convertedSteps
+            steps,
+            this.props.stepInfo.convertedSteps
           );
+
+          // Update stepsToConvert
+          console.log("STEPS: ", steps, " converted steps: ", this.props.stepInfo.convertedSteps)
+          this.setState({
+            stepsToConvert: (steps - this.props.stepInfo.convertedSteps)
+          })
 
           // Uppdaterar Firebase
           let inputObj = {
             uid: this.props.user.uid,
             steps: steps,
-            convertedSteps: this.state.convertedSteps,
+            convertedSteps: this.props.stepInfo.convertedSteps,
             mode: "active"
           };
-          try {
-            if (this.props.stepinfo.conStepStatus === "fetched") {
-              this.props.syncStepsToFirebase(inputObj);
-            }
-          } catch {}
+          this.props.syncStepsToFirebase(inputObj);
+
         }
       }
     });
@@ -214,7 +210,7 @@ class StepScreen extends Component {
       <SafeAreaView style={styles.flexView}>
         <View style={{ height: 135 }}>
           <Header
-            currentSteps={this.state.steps}
+            currentSteps={this.props.stepInfo.steps}
             lastStepValue={0}
             lastConvertedSteps={200}
             date={this.state.date}
@@ -257,7 +253,7 @@ class StepScreen extends Component {
 
         <View style={{ position: "absolute", bottom: 0 }}>
           <Cards
-            steps={this.state.steps}
+            steps={this.props.stepInfo.steps}
             allTimeConverted={this.props.stepInfo.allTimeConverted}
             weeklyConverted={this.props.stepInfo.weeklyConverted}
           />
