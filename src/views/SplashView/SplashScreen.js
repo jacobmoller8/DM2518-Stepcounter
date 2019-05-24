@@ -44,7 +44,6 @@ class SplashScreen extends Component {
                     that.props.loadUser(user.uid)
                 }
             } else {
-                that.props.navigation.navigate("LoginScreen")
                 console.log("No account connected")
             }
         });
