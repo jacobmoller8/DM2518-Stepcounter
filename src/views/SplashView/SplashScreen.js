@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, Button,Platform, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
-import {initAppleHK} from "../../redux/actions/stepActions"
+import {initAppleHK, loadConvertedSteps, fetchStepsFromPeriod, loadStepAvg} from "../../redux/actions/stepActions"
 import { loadUser } from "../../redux/actions/userAction";
 import { store } from "../../redux/store/store";
 
@@ -16,6 +16,7 @@ class SplashScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            userLoaded: false
         };
     }
     componentWillMount = () => {
@@ -29,8 +30,30 @@ class SplashScreen extends Component {
     }
 
     componentWillReceiveProps(nextProp) {
+        console.log("NEXT PROP SPLASH: ", nextProp)
+        if (nextProp.user.isLoadingUser === "error"){
+            this.props.navigation.navigate("LoginScreen")
+        }
+        // Check that user has been loaded
         if (nextProp.user.uid !== "") {
-            this.props.navigation.navigate("StepScreen")
+            if(nextProp.stepInfo.loadingStepAvgSatus === 'not loaded'){
+                this.props.loadStepAvg(nextProp.user.uid)
+            }
+
+            // Loads converted steps
+            if (nextProp.stepInfo.conStepStatus === 'not fetched'){
+                this.props.loadConvertedSteps(nextProp.user.uid)
+            }
+            // Loads historical data
+            if (nextProp.stepInfo.conStepStatus === "no saved converted steps" && nextProp.stepInfo.stepsFromPeriodStatus === "not fetched" || nextProp.stepInfo.conStepStatus === "fetched" && nextProp.stepInfo.stepsFromPeriodStatus === "not fetched"){
+                this.props.fetchStepsFromPeriod(nextProp.user.uid)
+            }
+
+            if (nextProp.stepInfo.stepsFromPeriodStatus === "fetched" && nextProp.stepInfo.status === "initialized"){
+                this.props.navigation.navigate("StepScreen")
+            }
+
+            
         }
     }
 
@@ -39,8 +62,8 @@ class SplashScreen extends Component {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 console.log(user.email + " is now Authorized")
-                if (!store.getState().user.isLoadingUser) {
-                    console.log("trigger in splash screen")
+                if (!that.state.userLoaded) {
+                    that.setState({userLoaded: true})
                     that.props.loadUser(user.uid)
                 }
             } else {
@@ -68,14 +91,18 @@ class SplashScreen extends Component {
 
 const mapStateToProps = state => {
     return {
-        user: state.user
+        user: state.user,
+        stepInfo: state.stepInfo
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         initAppleHK: dispatch(initAppleHK()),
-        loadUser: (ownProps) => dispatch(loadUser(ownProps))
+        loadUser: (ownProps) => dispatch(loadUser(ownProps)),
+        loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps)),
+        fetchStepsFromPeriod: ownProps => dispatch(fetchStepsFromPeriod(ownProps)),
+        loadStepAvg: ownProps => dispatch(loadStepAvg(ownProps))
     }
 };
 

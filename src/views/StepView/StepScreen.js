@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   Button,
+  Platform,
   NativeAppEventEmitter,
   TouchableOpacity,
   Dimensions,
@@ -52,13 +53,11 @@ class StepScreen extends Component {
       steps: 0,
       convertedSteps: 0,
       error: "working",
-      avg: 0,
       stepObserver: null,
       date: "",
       month: "",
       goal: 10000,
       isFetchingSteps: false,
-      fetchedHistory: false,
       initialStepFetch: false
     };
   }
@@ -77,87 +76,25 @@ class StepScreen extends Component {
     this.getCurrentDate();
   }
 
-  componentWillReceiveProps(nextProp) {
-    if (
-      nextProp.stepInfo.status === "initialized" &&
-      nextProp.user.uid !== ""
-    ) {
-      if (this.state.steps === 0) {
-        if (!this.state.initialStepFetch) {
-          this.fetchStepCountData();
-          this.setState({ initialStepFetch: true });
-        }
-      }
-
-      if (!nextProp.stepInfo.conStepStatus) {
-        this.props.loadConvertedSteps(nextProp.user.uid);
-      }
-
-      if (nextProp.stepInfo.conStepStatus === "fetched") {
-        if (nextProp.stepInfo.convertedSteps > this.state.convertedSteps - 1) {
-          this.setState({ convertedSteps: nextProp.stepInfo.convertedSteps });
-        }
-      }
-      if (this.state.avg === 0) {
-        this.fetchStepCountAvg();
-      }
-
-      if (this.state.stepObserver === null) {
-        store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
-        let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
-          this.fetchStepCountData();
-        });
-
-        this.setState({ stepObserver: sub });
-      }
-
-      if (!this.state.fetchedHistory) {
-        this.props.fetchStepsFromPeriod(nextProp.user.uid);
-        this.setState({ fetchedHistory: true });
-      }
-    }
-  }
-
   componentDidMount() {
+    if (this.state.stepObserver === null) {
+      store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
+      let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
+        this.fetchStepCountData();
+      });
+
+      this.setState({ stepObserver: sub });
+    }
     BackgroundTask.schedule();
     this.animateStepsToUseTickerValue();
   }
 
   componentWillUnmount() {
     this.state.stepObserver.remove();
+    if (Platform.OS === "ios") {
+      this.props.initAppleHK;
+    }
   }
-
-  fetchStepCountAvg = () => {
-    let curDate = new Date();
-    var lastMonth = new Date();
-
-    var prevDate = lastMonth.getDate() - 30;
-    lastMonth.setDate(prevDate);
-
-    console.log("last month:", lastMonth, " curDate: ", curDate);
-
-    let options = {
-      startDate: lastMonth.toISOString()
-    };
-
-    let sum = 0;
-    let counter = 0;
-
-    store
-      .getState()
-      .stepInfo.HK.getDailyStepCountSamples(options, (err, results) => {
-        if (err) {
-          this.setState({ error: err.message });
-          return;
-        } else {
-          results.forEach(function(item) {
-            sum += item.value;
-            counter += 1;
-          });
-        }
-        this.setState({ avg: Math.round(sum / counter) });
-      });
-  };
 
   convertSteps = () => {
     /* DO SOMETHING WITH THE STEPS */
@@ -185,6 +122,7 @@ class StepScreen extends Component {
 
   fetchStepCountData = () => {
     this.setState({ isFetchingSteps: true });
+    
     store.getState().stepInfo.HK.getStepCount({}, (err, results) => {
       if (err) {
         this.setState({ error: err.message });
@@ -295,7 +233,7 @@ class StepScreen extends Component {
         <Text style={styles.stepFont}>{this.state.stepsToConvert}</Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>
 
-        <Text style={styles.avgFont}>Daily Average: {this.state.avg}</Text>
+        <Text style={styles.avgFont}>Daily Average: {this.props.avg}</Text>
         <Text style={curStyle}>Status: {this.state.error}</Text>
 
         <TouchableOpacity
@@ -333,6 +271,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    initAppleHK: dispatch(initAppleHK),
     updateStepState: (steps, converted) =>
       dispatch(updateStepState(steps, converted)),
     syncStepsToFirebase: ownProps => dispatch(syncStepsToFirebase(ownProps)),

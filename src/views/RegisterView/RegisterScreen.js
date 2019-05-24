@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, SafeAreaView, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
-import { regUser } from '../../redux/actions/userAction'
+import { regUser, loadUser } from '../../redux/actions/userAction'
+import { saveStepAvg } from '../../redux/actions/stepActions'
 
 
 import * as firebase from 'firebase';
@@ -19,7 +20,8 @@ class RegisterScreen extends Component {
             pin: "",
             email: "",
             password: "",
-            errorMessage: ""
+            errorMessage: "",
+            userRegistrated: false
         };
     }
 
@@ -32,9 +34,13 @@ class RegisterScreen extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.user.uid !== "") {
-            this.props.navigation.navigate("StepScreen")
+        if (nextProps.user.uid !== "" && nextProps.stepInfo.stepAvgStatus === "not set") {
+            this.props.saveStepAvg(nextProps.user.uid)
         }
+        if(nextProps.stepInfo.stepAvgStatus === "done")  
+        {
+                this.props.navigation.navigate("StepScreen")
+            }
     }
 
     checkIfAuthorized = () => {
@@ -43,7 +49,8 @@ class RegisterScreen extends Component {
             if (user) {
                 console.log(user.email + " is now Authorized")
                 let inputObj = { pin: that.state.pin, name: that.state.name, uid: user.uid, email: that.state.email }
-                if (!store.getState().user.registered) {
+                if (user.uid !== "" && that.state.userRegistrated === false) {
+                    that.setState({ userRegistrated: true, uid: user.uid })
                     that.props.regUser(inputObj)
                 }
             } else {
@@ -164,7 +171,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        regUser: (ownProps) => dispatch(regUser(ownProps))
+        regUser: (ownProps) => dispatch(regUser(ownProps)),
+        saveStepAvg: ownProps => dispatch(saveStepAvg(ownProps)),
+        loadUser: ownProps => dispatch(loadUser(ownProps))
 
     }
 };

@@ -6,7 +6,8 @@ const initialState = {
     name: "",
     email: "",
     profilePic: "https://freepngimg.com/thumb/mario/20698-7-mario-transparent-background.png",
-    isLoadingUser: false
+    isLoadingUser: false,
+    registered: false
 }
 
 export default function userReducer(state = initialState, { type, payload }) {

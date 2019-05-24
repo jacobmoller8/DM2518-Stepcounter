@@ -24,6 +24,13 @@ export const REQUEST_STEPS_FROM_PERIOD = "REQUEST_STEPS_FROM_PERIOD"
 export const RECIEVE_STEPS_FROM_PERIOD = "RECIEVE_STEPS_FROM_PERIOD"
 export const ERROR_STEPS_FROM_PERIOD = "ERROR_STEPS_FROM_PERIOD"
 
+export const SET_STEP_AVG = "SET_STEP_AVG"
+export const STEP_AVG_SET = "STEP_AVG_SET"
+export const ERROR_STEP_AVG = "ERROR_STEP_AVG"
+
+export const LOAD_STEP_AVG = "LOAD_STEP_AVG"
+export const STEP_AVG_LOADED = "STEP_AVG_LOADED"
+export const ERROR_LOADING_STEP_AVG = "ERROR_LOADING_STEP_AVG"
 
 export function initAppleHK() {
     let options = {
@@ -120,7 +127,7 @@ export function loadConvertedSteps(uid) {
                 console.log("No such document!");
                 dispatch({
                     type: ERROR_CONVERTED_STEPS,
-                    payload: { conStepStatus: 'error1' }
+                    payload: { conStepStatus: 'no saved converted steps' }
                 })
             }
         }).catch(function (error) {
@@ -159,13 +166,13 @@ export function fetchStepsFromPeriod(uid) {
 
         dispatch({
             type: REQUEST_STEPS_FROM_PERIOD,
-            payload: { isFetchingStepsFromPeriod: true }
+            payload: { stepsFromPeriodStatus: 'fetching' }
         })
 
         db.collection('users/' + uid + '/days').get()
             .then((snapshot) => {
                 snapshot.docs.forEach(doc => {
-                    days.push(doc.data()) 
+                    days.push(doc.data())
                 })
             }).then(() => {
                 days.forEach(day => {
@@ -181,7 +188,7 @@ export function fetchStepsFromPeriod(uid) {
                 dispatch({
                     type: RECIEVE_STEPS_FROM_PERIOD,
                     payload: {
-                        isFetchingStepsFromPeriod: false,
+                        stepsFromPeriodStatus: "fetched",
                         allTimeSteps: allTimeSteps,
                         allTimeConverted: allTimeConverted,
                         weeklySteps: weeklySteps,
@@ -192,7 +199,7 @@ export function fetchStepsFromPeriod(uid) {
                 console.log('error: ', err)
                 dispatch({
                     type: ERROR_STEPS_FROM_PERIOD,
-                    payload: { isFetchingStepsFromPeriod: false }
+                    payload: { stepsFromPeriodStatus: err }
                 })
             })
 
@@ -201,6 +208,109 @@ export function fetchStepsFromPeriod(uid) {
     }
 }
 
+
+export function saveStepAvg(uid) {
+    let db = firebase.firestore()
+
+    var calcAVG = new Promise(function(resolve, reject) {
+    var lastMonth = new Date();
+
+    var prevDate = lastMonth.getDate() - 30;
+    lastMonth.setDate(prevDate);
+
+    let options = {
+        startDate: lastMonth.toISOString()
+    };
+
+    let sum = 0;
+    let counter = 0;
+
+    store.getState().stepInfo.HK.getDailyStepCountSamples(options, (err, results) => {
+        if (err) {
+            dispatch({
+                type: ERROR_STEP_AVG,
+                payload: { stepAvgStatus: err }
+            })
+        } else {
+            results.forEach(function (item) {
+                sum += item.value;
+                counter += 1;
+            });
+            resolve(Math.round(sum / counter))
+
+        }
+
+    })
+    let curDate = new Date();
+    
+      });
+      
+
+    return dispatch => {
+        dispatch({
+            type: SET_STEP_AVG,
+            payload: { stepAvgStatus: 'calculating' }
+        })
+        calcAVG.then((res)=>{
+            db.collection("users").doc(uid).set({
+                stepAvg: res
+            }, { merge: true })
+                .then(function () {
+                    dispatch({
+                        type: STEP_AVG_SET,
+                        payload: { stepAvgStatus: 'done', stepAvg: res }
+                    })
+                })
+                .catch(function (error) {
+                    console.log("error syncing user steps to database: ", error)
+                    dispatch({
+                        type: ERROR_STEP_AVG,
+                        payload: { stepAvgStatus: error }
+                    })
+                });
+        }).catch((err)=>{
+            dispatch({
+                type: ERROR_STEP_AVG,
+                payload: { stepAvgStatus: err }
+            })
+        })
+
+    }
+}
+
+export function loadStepAvg(uid) {
+    let db = firebase.firestore()
+    var docRef = db.collection("users").doc(uid);
+    return dispatch => {
+
+        dispatch({
+            type: LOAD_STEP_AVG,
+            payload: { loadingStepAvgSatus: 'loading' }
+        })
+
+        docRef.get().then(function (doc) {
+            if (doc.exists) {
+                dispatch({
+                    type: STEP_AVG_LOADED,
+                    payload: { loadingStepAvgSatus: 'loaded', stepAvg: doc.data().stepAvg }
+                })
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+                dispatch({
+                    type: ERROR_LOADING_STEP_AVG,
+                    payload: { loadingStepAvgSatus: 'error' }
+                })
+            }
+        }).catch(function (error) {
+            console.log("Error getting document:", error);
+            dispatch({
+                type: ERROR_LOADING_STEP_AVG,
+                payload: { loadingStepAvgSatus: 'error' }
+            })
+        });
+    }
+}
 
 export function resetSteps() {
     return {

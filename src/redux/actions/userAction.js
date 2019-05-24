@@ -28,8 +28,7 @@ export function regUser(inputObj) {
             name: inputObj.name,
             email: inputObj.email
 
-        })
-            .then(function () {
+        }).then(function () {
                 dispatch({
                     type: REGISTERED_USER,
                     payload: { registered: true }
@@ -88,14 +87,14 @@ export function loadUser(uid) {
                 console.log("No such document!");
                 dispatch({
                     type: ERROR_LOADING_USER,
-                    payload: { isLoadingUser: false}
+                    payload: { isLoadingUser: 'error'}
                 })
             }
         }).catch(function (error) {
             console.log("Error getting document:", error);
             dispatch({
                 type: ERROR_LOADING_USER,
-                payload: { isLoadingUser: false}
+                payload: { isLoadingUser: 'error'}
             })
         });
     }
