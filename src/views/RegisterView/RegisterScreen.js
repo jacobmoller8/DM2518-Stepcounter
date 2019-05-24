@@ -7,6 +7,7 @@ import { regUser } from '../../redux/actions/userAction'
 
 import * as firebase from 'firebase';
 import "firebase/auth";
+import { store } from "../../redux/store/store";
 
 
 class RegisterScreen extends Component {
@@ -30,14 +31,21 @@ class RegisterScreen extends Component {
         });
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.user.uid !== "") {
+            this.props.navigation.navigate("StepScreen")
+        }
+    }
+
     checkIfAuthorized = () => {
         var that = this
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
                 console.log(user.email + " is now Authorized")
-                let inputObj = { pin: that.state.pin, name: that.state.name, uid: user.uid }
-                that.props.regUser(inputObj)
-                that.props.navigation.navigate("StepScreen")
+                let inputObj = { pin: that.state.pin, name: that.state.name, uid: user.uid, email: that.state.email }
+                if (!store.getState().user.registered) {
+                    that.props.regUser(inputObj)
+                }
             } else {
                 console.log("Register failed")
             }

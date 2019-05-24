@@ -1,12 +1,14 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, SafeAreaView, Image } from "react-native";
+import { View, Text, StyleSheet, Button, Platform, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, SafeAreaView, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 import { loadUser } from "../../redux/actions/userAction";
+import {initAppleHK} from "../../redux/actions/stepActions"
 
 import { firebaseConfig } from "../../firebaseConfig";
 import * as firebase from 'firebase';
 import "firebase/auth";
+import { store } from "../../redux/store/store";
 
 
 class LoginScreen extends Component {
@@ -20,14 +22,18 @@ class LoginScreen extends Component {
         };
     }
 
-    componentWillMount = () => {
-        firebase.initializeApp(firebaseConfig)
-    }
     componentDidMount = () => {
-
-        this.checkIfAuthorized()
+        //this.checkIfAuthorized()
         //this.signOutUser()
+    }
 
+    componentWillReceiveProps(nextProp) {
+        if (nextProp.user.uid !== "") {
+            if (Platform.OS === "ios") {
+                this.props.initAppleHK;
+              }
+            this.props.navigation.navigate("StepScreen")
+        }
     }
 
     signOutUser = () => {
@@ -42,10 +48,11 @@ class LoginScreen extends Component {
         var that = this
         firebase.auth().onAuthStateChanged(function (user) {
             if (user) {
-                let inputObj = { email: user.email, uid: user.uid }
                 console.log(user.email + " is now Authorized")
-                that.props.loadUser(inputObj)
-                that.props.navigation.navigate("StepScreen")
+                if (!store.getState().user.isLoadingUser) {
+                    console.log("trigger in logIn")
+                    that.props.loadUser(user.uid)
+                }
             } else {
                 console.log("No account connected")
             }
@@ -56,13 +63,13 @@ class LoginScreen extends Component {
         console.log(this.state.email)
         console.log(this.state.password)
         var that = this
-        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
+        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then(this.checkIfAuthorized()).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
             console.log(errorCode)
             that.setState({ errorMessage: errorMessage })
             console.log(errorMessage)
-        }).then(this.checkIfAuthorized())
+        })
     }
 
     render() {
@@ -144,6 +151,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        initAppleHK: dispatch(initAppleHK()),
         loadUser: (ownProps) => dispatch(loadUser(ownProps))
     }
 };

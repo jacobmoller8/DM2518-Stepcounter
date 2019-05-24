@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Button,
-  Platform,
   NativeAppEventEmitter,
   TouchableOpacity,
   Dimensions,
@@ -19,7 +18,8 @@ import {
   initAppleHK,
   syncStepsToFirebase,
   updateStepState,
-  loadConvertedSteps
+  loadConvertedSteps,
+  fetchStepsFromPeriod
 } from "../../redux/actions/stepActions";
 import BackgroundTask from "react-native-background-task";
 import Cards from "./CardsScroll";
@@ -58,7 +58,8 @@ class StepScreen extends Component {
       month: "",
       goal: 10000,
       isFetchingSteps: false,
-      diff: 0
+      fetchedHistory: false,
+      initialStepFetch: false
     };
   }
 
@@ -72,32 +73,35 @@ class StepScreen extends Component {
   };
 
   componentWillMount() {
-    if (Platform.OS === "ios") {
-      this.props.initAppleHK;
-    }
+    this.fetchStepCountData();
     this.getCurrentDate();
   }
 
   componentWillReceiveProps(nextProp) {
-    console.log("NEXT PROP: ", nextProp);
-    if (nextProp.stepInfo.status === "initialized") {
+    if (
+      nextProp.stepInfo.status === "initialized" &&
+      nextProp.user.uid !== ""
+    ) {
       if (this.state.steps === 0) {
-        // Kallas bara om appen startar för första gången, annars tar eventListnern hand om detta
-        this.fetchStepCountData();
-      }
-      if (!nextProp.stepInfo.conStepStatus) {
-        this.props.loadConvertedSteps(this.props.user.uid);
-      }
-
-      if (nextProp.stepInfo.conStepStatus === "fetched") {
-        if (nextProp.stepInfo.convertedSteps > this.state.convertedSteps) {
-          this.setState({ convertedSteps: nextProp.stepInfo.convertedSteps });
+        if (!initialStepFetch) {
+          this.fetchStepCountData();
+          this.setState({ initialStepFetch: true });
         }
       }
 
+      if (!nextProp.stepInfo.conStepStatus) {
+        this.props.loadConvertedSteps(nextProp.user.uid);
+      }
+
+      if (nextProp.stepInfo.conStepStatus === "fetched") {
+        if (nextProp.stepInfo.convertedSteps > this.state.convertedSteps - 1) {
+          this.setState({ convertedSteps: nextProp.stepInfo.convertedSteps });
+        }
+      }
       if (this.state.avg === 0) {
         this.fetchStepCountAvg();
       }
+
       if (this.state.stepObserver === null) {
         store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
         let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
@@ -105,6 +109,11 @@ class StepScreen extends Component {
         });
 
         this.setState({ stepObserver: sub });
+      }
+
+      if (!this.state.fetchedHistory) {
+        this.props.fetchStepsFromPeriod(nextProp.user.uid);
+        this.setState({ fetchedHistory: true });
       }
     }
   }
@@ -151,13 +160,15 @@ class StepScreen extends Component {
   };
 
   convertSteps = () => {
-    let stepsToConvert = this.state.steps - this.state.convertedSteps;
-
     /* DO SOMETHING WITH THE STEPS */
-    console.log("CONVERTED: ", stepsToConvert, " STEPS");
+    console.log("CONVERTED: ", this.state.stepsToConvert, " STEPS");
 
-    // Uppdaterar lokala state
-    this.setState({ convertedSteps: this.state.steps });
+    // Uppdaterar lokala state, nu måste även history hämtas på nytt
+    this.setState({
+      convertedSteps: this.state.steps,
+      stepsToConvert: 0,
+      fetchedHistory: false
+    });
 
     // Uppdaterar Redux state
     this.props.updateStepState(this.state.steps, this.state.steps);
@@ -180,8 +191,13 @@ class StepScreen extends Component {
       } else {
         let steps = Math.round(results.value);
 
-        // Uppdaterar State i komponenten
-        this.setState({ steps: steps, isFetchingSteps: false });
+        // Uppdaterar State i komponenten, Nu måste även History hämtas på nytt
+        this.setState({
+          steps: steps,
+          isFetchingSteps: false,
+          fetchedHistory: false,
+          stepsToConvert: steps - this.props.stepInfo.convertedSteps
+        });
 
         // Jämför redux med nuvarande
         if (this.props.stepInfo.steps !== steps) {
@@ -205,12 +221,16 @@ class StepScreen extends Component {
 
           // Uppdaterar Firebase
           let inputObj = {
-            uid: this.props.user,
+            uid: this.props.user.uid,
             steps: steps,
             convertedSteps: this.state.convertedSteps,
             mode: "active"
           };
-          this.props.syncStepsToFirebase(inputObj);
+          try {
+            if (this.props.stepinfo.conStepStatus === "fetched") {
+              this.props.syncStepsToFirebase(inputObj);
+            }
+          } catch {}
         }
       }
     });
@@ -237,12 +257,10 @@ class StepScreen extends Component {
   };
 
   render() {
-    console.log(this.state);
-
     if (this.state.isFetchingSteps) {
-      console.log("SHOW SPINNER");
+      // Show spinner
     } else {
-      console.log("DONT SHOW SPINNER");
+      // Dont show spinner
     }
 
     let curStyle = styles.workingFont;
@@ -274,7 +292,7 @@ class StepScreen extends Component {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.stepFont}>{this.state.diff}</Text>
+        <Text style={styles.stepFont}>{this.state.stepsToConvert}</Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>
 
         <Text style={styles.avgFont}>Daily Average: {this.state.avg}</Text>
@@ -294,7 +312,11 @@ class StepScreen extends Component {
         </TouchableOpacity>
 
         <View style={{ position: "absolute", bottom: 0 }}>
-          <Cards steps={this.state.steps} />
+          <Cards
+            steps={this.state.steps}
+            allTimeConverted={this.props.stepInfo.allTimeConverted}
+            weeklyConverted={this.props.stepInfo.weeklyConverted}
+          />
         </View>
       </SafeAreaView>
     );
@@ -311,11 +333,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    initAppleHK: dispatch(initAppleHK()),
     updateStepState: (steps, converted) =>
       dispatch(updateStepState(steps, converted)),
     syncStepsToFirebase: ownProps => dispatch(syncStepsToFirebase(ownProps)),
-    loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps))
+    loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps)),
+    fetchStepsFromPeriod: uid => dispatch(fetchStepsFromPeriod(uid))
   };
 };
 

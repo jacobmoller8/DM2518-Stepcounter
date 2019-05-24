@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import { StatusBar } from "react-native";
 
+import SplashScreen from "./src/views/SplashView/SplashScreen";
 import LoginScreen from "./src/views/LoginView/LoginScreen";
 import RegisterScreen from "./src/views/RegisterView/RegisterScreen";
 import StepScreen from "./src/views/StepView/StepScreen";
@@ -18,7 +19,14 @@ class App extends Component {
 }
 
 const AppStackNavigator = createStackNavigator({
-  LoginScreen: { screen: LoginScreen, navigationOptions: { header: null } },
+  SplashScreen: {
+    screen: SplashScreen,
+    navigationOptions: { header: null, gesturesEnabled: false }
+  },
+  LoginScreen: {
+    screen: LoginScreen,
+    navigationOptions: { header: null, gesturesEnabled: false }
+  },
   RegisterScreen: {
     screen: RegisterScreen,
     navigationOptions: { header: null }
