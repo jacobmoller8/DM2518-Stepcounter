@@ -104,7 +104,7 @@ class LoginScreen extends Component {
                             <Text style={styles.loginText}>LOG IN</Text>
                         </TouchableOpacity>
                         <View style={styles.card}>
-                            <TouchableOpacity>
+                            <TouchableOpacity style={{ zIndex: 105 }} onPress={() => this.props.navigation.navigate("ForgotPassScreen")}>
                                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                             </TouchableOpacity>
                             <Image
