@@ -20,6 +20,10 @@ export const UPDATE_STEPS_STATE = "UPDATE_STEPS_STATE"
 
 export const RESET_STEPS = "RESET_STEPS"
 
+export const REQUEST_STEPS_FROM_PERIOD = "REQUEST_STEPS_FROM_PERIOD"
+export const RECIEVE_STEPS_FROM_PERIOD = "RECIEVE_STEPS_FROM_PERIOD"
+export const ERROR_STEPS_FROM_PERIOD = "ERROR_STEPS_FROM_PERIOD"
+
 
 export function initAppleHK() {
     let options = {
@@ -139,7 +143,68 @@ export function updateStepState(steps, converted) {
     }
 }
 
-export function resetSteps(){
+export function fetchStepsFromPeriod(uid) {
+    let db = firebase.firestore()
+    let today = new Date()
+
+    let allTimeSteps = 0
+    let allTimeConverted = 0
+    let weeklySteps = 0
+    let weeklyConverted = 0
+
+    let days = []
+    let counter = 0
+
+    return dispatch => {
+
+        dispatch({
+            type: REQUEST_STEPS_FROM_PERIOD,
+            payload: { isFetchingStepsFromPeriod: true }
+        })
+
+        db.collection('users/' + uid + '/days').get()
+            .then((snapshot) => {
+                snapshot.docs.forEach(doc => {
+                    days.push(doc.data()) 
+                })
+            }).then(() => {
+                console.log(days)
+                days.forEach(day => {
+                    console.log("DAY: ", day)
+                    if (counter < 7) {
+                        weeklySteps += day.steps
+                        weeklyConverted += day.convertedSteps
+                        counter += 1
+                    }
+                    allTimeSteps += day.steps
+                    allTimeConverted += day.convertedSteps
+                })
+            }).then(() => {
+                dispatch({
+                    type: RECIEVE_STEPS_FROM_PERIOD,
+                    payload: {
+                        isFetchingStepsFromPeriod: false,
+                        allTimeSteps: allTimeSteps,
+                        allTimeConverted: allTimeConverted,
+                        weeklySteps: weeklySteps,
+                        weeklyConverted: weeklyConverted
+                    }
+                })
+            }).catch((err) => {
+                console.log('error: ', err)
+                dispatch({
+                    type: ERROR_STEPS_FROM_PERIOD,
+                    payload: { isFetchingStepsFromPeriod: false }
+                })
+            })
+
+
+
+    }
+}
+
+
+export function resetSteps() {
     return {
         type: RESET_STEPS
     }

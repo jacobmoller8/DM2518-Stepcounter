@@ -18,7 +18,8 @@ import {
   initAppleHK,
   syncStepsToFirebase,
   updateStepState,
-  loadConvertedSteps
+  loadConvertedSteps,
+  fetchStepsFromPeriod
 } from "../../redux/actions/stepActions";
 import BackgroundTask from "react-native-background-task";
 import Cards from "./CardsScroll";
@@ -55,7 +56,8 @@ class StepScreen extends Component {
       date: "",
       month: "",
       goal: 10000,
-      isFetchingSteps: false
+      isFetchingSteps: false,
+      fetchedHistory: false
     };
   }
   componentWillMount() {
@@ -66,7 +68,6 @@ class StepScreen extends Component {
   }
 
   componentWillReceiveProps(nextProp) {
-    console.log("NEXT PROP: ", nextProp)
     if (nextProp.stepInfo.status === "initialized" && nextProp.user.uid !== "") {
       if (this.state.steps === 0) {
         // Kallas bara om appen startar för första gången, annars tar eventListnern hand om detta
@@ -81,10 +82,15 @@ class StepScreen extends Component {
           this.setState({ convertedSteps: nextProp.stepInfo.convertedSteps });
         }
       }
-
       if (this.state.avg === 0) {
         this.fetchStepCountAvg();
       }
+
+      if (!this.state.fetchedHistory){
+        this.props.fetchStepsFromPeriod(nextProp.user.uid)
+        this.setState({fetchedHistory: true})
+      }
+
       if (this.state.stepObserver === null) {
         store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
         let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
@@ -143,7 +149,7 @@ class StepScreen extends Component {
     console.log("CONVERTED: ", stepsToConvert, " STEPS");
 
     // Uppdaterar lokala state
-    this.setState({ convertedSteps: this.state.steps });
+    this.setState({ convertedSteps: this.state.steps, fetchedHistory: false });
 
     // Uppdaterar Redux state
     this.props.updateStepState(this.state.steps, this.state.steps);
@@ -167,7 +173,7 @@ class StepScreen extends Component {
         let steps = Math.round(results.value);
 
         // Uppdaterar State i komponenten
-        this.setState({ steps: steps, isFetchingSteps: false });
+        this.setState({ steps: steps, isFetchingSteps: false, fetchedHistory: false });
 
         // Jämför redux med nuvarande
         if (this.props.stepInfo.steps !== steps) {
@@ -224,9 +230,9 @@ class StepScreen extends Component {
   render() {
 
     if (this.state.isFetchingSteps) {
-      console.log("SHOW SPINNER");
+      // Show spinner
     } else {
-      console.log("DONT SHOW SPINNER");
+     // Dont show spinner
     }
 
     let curStyle = styles.workingFont;
@@ -301,7 +307,8 @@ const mapDispatchToProps = dispatch => {
     updateStepState: (steps, converted) =>
       dispatch(updateStepState(steps, converted)),
     syncStepsToFirebase: ownProps => dispatch(syncStepsToFirebase(ownProps)),
-    loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps))
+    loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps)),
+    fetchStepsFromPeriod: (uid) => dispatch(fetchStepsFromPeriod(uid))
   };
 };
 

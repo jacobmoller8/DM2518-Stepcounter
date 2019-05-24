@@ -38,7 +38,7 @@ class ProfileScreen extends Component {
         return (
             <View style={styles.flexView}>
 
-                <Image style={styles.image} source={{ uri: this.props.profilePic }}>
+                <Image style={styles.image} source={{ uri: this.props.user.profilePic }}>
                 </Image>
 
                 <TouchableOpacity style={styles.editIcon} onPress={() => this.props.navigation.navigate("PicturePickerScreen")}>
@@ -46,10 +46,10 @@ class ProfileScreen extends Component {
                 </TouchableOpacity>
 
                 <Text style={styles.nameLabel}>
-                    FirstName LastName
+                    {this.props.user.name}
                 </Text>
                 <Text style={styles.emailLabel}>
-                    hello@gmail.com
+                    {this.props.user.email}
                 </Text>
 
                 <TouchableOpacity style={styles.backButton} onPress={() => this.props.navigation.navigate("StepScreen")}>
@@ -76,7 +76,7 @@ class ProfileScreen extends Component {
 
 const mapStateToProps = state => {
     return {
-        profilePic: state.user.profilePic
+        user: state.user
     }
 };
 
@@ -103,7 +103,10 @@ const styles = StyleSheet.create({
     image: {
         height: 200,
         width: 200,
-        borderRadius: 100
+        borderRadius: 100,
+        borderWidth: 2,
+        borderColor: '#455C97'
+
     },
     editIcon: {
         height: 60,
@@ -119,6 +122,7 @@ const styles = StyleSheet.create({
     },
     nameLabel: {
         fontSize: 30,
+        fontWeight: 'bold',
         color: "#455C97"
     },
     emailLabel: {
