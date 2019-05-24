@@ -20,6 +20,9 @@ class SplashScreen extends Component {
     }
     componentWillMount = () => {
         firebase.initializeApp(firebaseConfig)
+        if (Platform.OS === "ios") {
+            this.props.initAppleHK;
+          }
     }
     componentDidMount = () => {
         this.checkIfAuthorized()
@@ -27,9 +30,6 @@ class SplashScreen extends Component {
 
     componentWillReceiveProps(nextProp) {
         if (nextProp.user.uid !== "") {
-            if (Platform.OS === "ios") {
-                this.props.initAppleHK;
-              }
             this.props.navigation.navigate("StepScreen")
         }
     }

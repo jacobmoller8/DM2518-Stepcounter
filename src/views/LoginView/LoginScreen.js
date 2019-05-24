@@ -22,27 +22,13 @@ class LoginScreen extends Component {
         };
     }
 
-    componentDidMount = () => {
-        //this.checkIfAuthorized()
-        //this.signOutUser()
-    }
 
     componentWillReceiveProps(nextProp) {
         if (nextProp.user.uid !== "") {
-            if (Platform.OS === "ios") {
-                this.props.initAppleHK;
-              }
             this.props.navigation.navigate("StepScreen")
         }
     }
 
-    signOutUser = () => {
-        firebase.auth().signOut().then(function () {
-            console.log("signed out user")
-        }).catch(function (error) {
-            console.log("ERROR:" + error)
-        });
-    }
 
     checkIfAuthorized = () => {
         var that = this
