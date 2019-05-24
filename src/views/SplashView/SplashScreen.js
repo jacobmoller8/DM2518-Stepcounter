@@ -26,6 +26,7 @@ class SplashScreen extends Component {
     }
 
     componentWillReceiveProps(nextProp) {
+        console.log("REACH splash: ", nextProp)
         if (nextProp.user.uid !== "") {
             if (Platform.OS === "ios") {
                 this.props.initAppleHK;

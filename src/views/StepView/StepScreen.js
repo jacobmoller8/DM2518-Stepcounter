@@ -56,7 +56,8 @@ class StepScreen extends Component {
       month: "",
       goal: 10000,
       isFetchingSteps: false,
-      fetchedHistory: false
+      fetchedHistory: false,
+      initialStepFetch: false
     };
   }
   componentWillMount() {
@@ -68,12 +69,19 @@ class StepScreen extends Component {
     console.log("NEXT PROP: ", nextProp)
     if (nextProp.stepInfo.status === "initialized" && nextProp.user.uid !== "") {
 
+      if (this.state.steps === 0) {
+        if (!initialStepFetch) {
+          this.fetchStepCountData();
+          this.setState({ initialStepFetch: true })
+        }
+      }
+
       if (!nextProp.stepInfo.conStepStatus) {
         this.props.loadConvertedSteps(nextProp.user.uid);
       }
 
       if (nextProp.stepInfo.conStepStatus === "fetched") {
-        if (nextProp.stepInfo.convertedSteps > this.state.convertedSteps) {
+        if (nextProp.stepInfo.convertedSteps > this.state.convertedSteps - 1) {
           this.setState({ convertedSteps: nextProp.stepInfo.convertedSteps });
         }
       }
@@ -90,7 +98,7 @@ class StepScreen extends Component {
         this.setState({ stepObserver: sub });
       }
 
-      if (!this.state.fetchedHistory && !nextProp.stepInfo.isSyncing) {
+      if (!this.state.fetchedHistory) {
         this.props.fetchStepsFromPeriod(nextProp.user.uid)
         this.setState({ fetchedHistory: true })
       }
@@ -174,7 +182,7 @@ class StepScreen extends Component {
           steps: steps,
           isFetchingSteps: false,
           fetchedHistory: false,
-          stepsToConvert: steps - this.state.convertedSteps
+          stepsToConvert: steps - this.props.stepInfo.convertedSteps
         });
 
         // Jämför redux med nuvarande
@@ -203,7 +211,12 @@ class StepScreen extends Component {
             convertedSteps: this.state.convertedSteps,
             mode: "active"
           };
-          this.props.syncStepsToFirebase(inputObj);
+          if (this.props.stepinfo.conStepStatus) {
+            if (this.props.stepinfo.conStepStatus === "fetched") {
+              this.props.syncStepsToFirebase(inputObj);
+            }
+          }
+
         }
       }
     });

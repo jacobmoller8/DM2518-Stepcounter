@@ -23,11 +23,12 @@ class LoginScreen extends Component {
     }
 
     componentDidMount = () => {
-        //this.checkIfAuthorized()
+        this.checkIfAuthorized()
         //this.signOutUser()
     }
 
     componentWillReceiveProps(nextProp) {
+        console.log("REACH login: ", nextProp)
         if (nextProp.user.uid !== "") {
             if (Platform.OS === "ios") {
                 this.props.initAppleHK;
