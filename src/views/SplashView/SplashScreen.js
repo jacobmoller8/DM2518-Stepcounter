@@ -27,9 +27,6 @@ class SplashScreen extends Component {
 
     componentWillReceiveProps(nextProp) {
         if (nextProp.user.uid !== "") {
-            if (Platform.OS === "ios") {
-                this.props.initAppleHK;
-              }
             this.props.navigation.navigate("StepScreen")
         }
     }
@@ -44,6 +41,7 @@ class SplashScreen extends Component {
                     that.props.loadUser(user.uid)
                 }
             } else {
+                that.props.navigation.navigate("LoginScreen")
                 console.log("No account connected")
             }
         });
