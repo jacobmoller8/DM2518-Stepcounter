@@ -66,7 +66,6 @@ class StepScreen extends Component {
   }
 
   componentWillReceiveProps(nextProp) {
-    console.log("NEXT PROP: ", nextProp)
     if (nextProp.stepInfo.status === "initialized" && nextProp.user.uid !== "") {
 
       if (this.state.steps === 0) {

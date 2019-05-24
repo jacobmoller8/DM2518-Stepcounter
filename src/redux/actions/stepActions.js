@@ -168,9 +168,7 @@ export function fetchStepsFromPeriod(uid) {
                     days.push(doc.data()) 
                 })
             }).then(() => {
-                console.log(days)
                 days.forEach(day => {
-                    console.log("DAY: ", day)
                     if (counter < 7) {
                         weeklySteps += day.steps
                         weeklyConverted += day.convertedSteps
