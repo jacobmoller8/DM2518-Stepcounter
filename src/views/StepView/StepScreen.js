@@ -83,7 +83,7 @@ class StepScreen extends Component {
       nextProp.user.uid !== ""
     ) {
       if (this.state.steps === 0) {
-        if (!initialStepFetch) {
+        if (!this.state.initialStepFetch) {
           this.fetchStepCountData();
           this.setState({ initialStepFetch: true });
         }
