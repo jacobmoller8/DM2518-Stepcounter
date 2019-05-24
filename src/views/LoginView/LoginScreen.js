@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Button, Platform, Dimensions, TextInput, Toucha
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 import { loadUser } from "../../redux/actions/userAction";
-import {initAppleHK} from "../../redux/actions/stepActions"
+import { initAppleHK } from "../../redux/actions/stepActions"
 
 import { firebaseConfig } from "../../firebaseConfig";
 import * as firebase from 'firebase';
@@ -74,8 +74,10 @@ class LoginScreen extends Component {
                             style={styles.textInput}
                             placeholder="john@doe.com"
                             placeholderTextColor="#757575"
-                            keyboardType="default"
-                            returnKeyType="next">
+                            keyboardType="email-address"
+                            returnKeyType="next"
+                            onSubmitEditing={() => { this.secondTextInput.focus(); }}
+                            blurOnSubmit={false}>
                         </TextInput>
                     </View>
 
@@ -90,7 +92,8 @@ class LoginScreen extends Component {
                             keyboardType="default"
                             returnKeyType="done"
                             secureTextEntry={true}
-                            blurOnSubmit={true}>
+                            blurOnSubmit={true}
+                            ref={(input) => { this.secondTextInput = input; }}>
                         </TextInput>
                     </View>
 

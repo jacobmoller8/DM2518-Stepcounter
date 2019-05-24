@@ -15,9 +15,6 @@ class ProfileScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
-            mail: "",
-            profilePic: ""
         };
     }
 
@@ -64,9 +61,33 @@ class ProfileScreen extends Component {
                     </Text>
                 </TouchableOpacity>
 
-                <Text style={styles.sponsoredText}>
-                    SPONSORED BY
-                </Text>
+
+                <View style={styles.sponsorView}>
+                    <Text style={styles.sponsoredText}>
+                        SPONSORED BY
+                    </Text>
+                    <TouchableOpacity style={styles.sponsorBackground}>
+                        <Image
+                            source={require("../../assets/cardNoice.png")}
+                            style={styles.cardNoiceOverlay}
+                        />
+                        <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                            <Image
+                                style={styles.kthImage}
+                                source={{ uri: "https://pbs.twimg.com/profile_images/972080657542406144/F-zbVzrm.jpg" }}
+                            />
+                            <View style={{ flexDirection: "column", justifyContent: "center", marginLeft: 10 }}>
+                                <Text style={styles.kthText}>Kungliga Tekniska Högskolan</Text>
+                                <Text style={styles.studyText}>STEGSTUDIE#23</Text>
+                            </View>
+
+
+
+                        </View>
+
+
+                    </TouchableOpacity>
+                </View>
 
 
             </View >
@@ -82,8 +103,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        logoutUser: () => {dispatch(logoutUser())},
-        resetSteps: () => {dispatch(resetSteps())}
+        logoutUser: () => { dispatch(logoutUser()) },
+        resetSteps: () => { dispatch(resetSteps()) }
 
     }
 };
@@ -101,6 +122,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     image: {
+        marginTop: -40,
         height: 200,
         width: 200,
         borderRadius: 100,
@@ -152,15 +174,49 @@ const styles = StyleSheet.create({
         color: "#455C97"
     },
     signOutButton: {
-        marginTop: 60,
+        marginTop: 30,
         fontSize: 25,
         color: "#455C97",
         textDecorationLine: "underline"
+    },
+    sponsorView: {
+        position: "absolute",
+        bottom: 10,
+        alignItems: "center"
     },
     sponsoredText: {
         marginTop: 20,
         fontSize: 10,
         color: "#455C97"
+    },
+    sponsorBackground: {
+        height: 100,
+        borderRadius: 10,
+        width: screenWidth - 10,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#455C97"
+    },
+    cardNoiceOverlay: {
+        borderRadius: 10,
+        width: screenWidth - 10,
+        height: 100,
+        position: "absolute"
+    },
+    kthImage: {
+        height: 70,
+        width: 70,
+        borderRadius: 35,
+        borderWidth: 2,
+        borderColor: "white"
+    },
+    kthText: {
+        color: "white",
+        fontSize: 20
+    },
+    studyText: {
+        color: "white",
+        fontSize: 24
     }
 
 });

@@ -88,8 +88,10 @@ class RegisterScreen extends Component {
                             style={styles.textInput}
                             placeholder="1234"
                             placeholderTextColor="#757575"
-                            keyboardType="numeric"
-                            returnKeyType="next">
+                            keyboardType="numbers-and-punctuation"
+                            returnKeyType="next"
+                            onSubmitEditing={() => { this.secondTextInput.focus(); }}
+                            blurOnSubmit={false}>
                         </TextInput>
                     </View>
 
@@ -102,7 +104,10 @@ class RegisterScreen extends Component {
                             placeholder="John Doe"
                             placeholderTextColor="#757575"
                             keyboardType="default"
-                            returnKeyType="next">
+                            returnKeyType="next"
+                            onSubmitEditing={() => { this.thirdTextInput.focus(); }}
+                            blurOnSubmit={false}
+                            ref={(input) => { this.secondTextInput = input; }}>
                         </TextInput>
                     </View>
 
@@ -114,8 +119,11 @@ class RegisterScreen extends Component {
                             style={styles.textInput}
                             placeholder="john@doe.com"
                             placeholderTextColor="#757575"
-                            keyboardType="default"
-                            returnKeyType="next">
+                            keyboardType="email-address"
+                            returnKeyType="next"
+                            onSubmitEditing={() => { this.forthTextInput.focus(); }}
+                            blurOnSubmit={false}
+                            ref={(input) => { this.thirdTextInput = input; }}>
                         </TextInput>
                     </View>
 
@@ -130,7 +138,8 @@ class RegisterScreen extends Component {
                             keyboardType="default"
                             returnKeyType="done"
                             secureTextEntry={true}
-                            blurOnSubmit={true}>
+                            blurOnSubmit={true}
+                            ref={(input) => { this.forthTextInput = input; }}>
                         </TextInput>
                     </View>
 
