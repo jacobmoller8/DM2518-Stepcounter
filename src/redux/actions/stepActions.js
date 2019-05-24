@@ -118,6 +118,7 @@ export function loadConvertedSteps(uid) {
 
         docRef.get().then(function (doc) {
             if (doc.exists) {
+                console.log("CONV STEPS FROM FIREBASE: ", doc.data().convertedSteps)
                 dispatch({
                     type: RECIEVE_CONVERTED_STEPS,
                     payload: { conStepStatus: 'fetched', convertedSteps: doc.data().convertedSteps }

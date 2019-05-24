@@ -30,7 +30,6 @@ class SplashScreen extends Component {
     }
 
     componentWillReceiveProps(nextProp) {
-        console.log("NEXT PROP SPLASH: ", nextProp)
         if (nextProp.user.isLoadingUser === "error"){
             this.props.navigation.navigate("LoginScreen")
         }

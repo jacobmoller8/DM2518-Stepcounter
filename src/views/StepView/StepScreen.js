@@ -99,6 +99,7 @@ class StepScreen extends Component {
     }
   }
 
+
   convertSteps = () => {
     /* DO SOMETHING WITH THE STEPS */
     console.log("CONVERTED: ", this.state.stepsToConvert, " STEPS");
@@ -238,7 +239,7 @@ class StepScreen extends Component {
         <Text style={styles.stepFont}>{this.state.stepsToConvert}</Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>
 
-        <Text style={styles.avgFont}>Daily Average: {this.props.avg}</Text>
+        <Text style={styles.avgFont}>Daily Average: {this.props.stepInfo.stepAvg}</Text>
         <Text style={curStyle}>Status: {this.state.error}</Text>
 
         <TouchableOpacity
