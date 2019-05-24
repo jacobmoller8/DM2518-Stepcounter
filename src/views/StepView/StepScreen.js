@@ -58,7 +58,8 @@ class StepScreen extends Component {
       month: "",
       goal: 10000,
       isFetchingSteps: false,
-      initialStepFetch: false
+      initialStepFetch: false,
+      outdatedHistory: false
     };
   }
 
@@ -90,21 +91,33 @@ class StepScreen extends Component {
     this.animateStepsToUseTickerValue();
   }
 
+
   componentWillReceiveProps(nextProp) {
-    console.log("nextProp: ", nextProp)
-    console.log(this.state.initialStepFetch, this.state.isFetchingSteps)
-    if (!this.state.initialStepFetch && !this.state.isFetchingSteps) {
-      console.log("REACH")
+
+    // Loads converted steps if app is reloaded
+    if (this.state.stepsToConvert === undefined){
+      this.props.loadConvertedSteps(this.props.user.uid)
+      this.setState({
+        stepsToConvert: this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
+      })
+    }
+
+
+    // Reloads stats, outdatedHistory is set as true when user converts steps
+    if (this.state.outdatedHistory){
+      this.props.fetchStepsFromPeriod(this.props.user.uid)
+      this.setState({outdatedHistory: false})
+    }
+
+    // Performs initial fetch of steps if user logs out and reloads app
+    if (!this.state.initialStepFetch && this.props.stepInfo.steps === 0) {
       this.fetchStepCountData();
-      this.setState({ initialStepFetch: true, stepsToConvert: this.props.stepInfo.steps - this.props.stepInfo.convertedSteps })
+      this.setState({ initialStepFetch: true})
     }
   }
 
   componentWillUnmount() {
     this.state.stepObserver.remove();
-    if (Platform.OS === "ios") {
-      this.props.initAppleHK;
-    }
   }
 
 
@@ -123,6 +136,10 @@ class StepScreen extends Component {
       mode: "active"
     };
     this.props.syncStepsToFirebase(inputObj);
+
+    // update state that new history fetch is needed, also zeroes stepsToConvert
+    this.setState({outdatedHistory: true, stepsToConvert: 0})
+
   };
 
   fetchStepCountData = () => {
@@ -143,10 +160,10 @@ class StepScreen extends Component {
           console.log("Difference to animate: ", diff);
           // ----------------------------------------------------------
 
-          // Om det är en ny dag och användaren kommer in på appen kanske gårdagens steps finns i redux, då körs denna "if"
-          if (steps < this.props.stepInfo.steps) {
-            this.setState({ convertedSteps: 0 });
-          }
+          // Update steps to convert
+          this.setState({
+            stepsToConvert: steps - this.props.stepInfo.convertedSteps
+          })
 
           // Uppdaterar Redux
           this.props.updateStepState(
@@ -154,11 +171,7 @@ class StepScreen extends Component {
             this.props.stepInfo.convertedSteps
           );
 
-          // Update stepsToConvert
           console.log("STEPS: ", steps, " converted steps: ", this.props.stepInfo.convertedSteps)
-          this.setState({
-            stepsToConvert: (steps - this.props.stepInfo.convertedSteps)
-          })
 
           // Uppdaterar Firebase
           let inputObj = {
@@ -253,7 +266,7 @@ class StepScreen extends Component {
 
         <View style={{ position: "absolute", bottom: 0 }}>
           <Cards
-            steps={this.props.stepInfo.steps}
+            steps={this.props.stepInfo.convertedSteps}
             allTimeConverted={this.props.stepInfo.allTimeConverted}
             weeklyConverted={this.props.stepInfo.weeklyConverted}
           />
