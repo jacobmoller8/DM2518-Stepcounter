@@ -86,11 +86,6 @@ class StepScreen extends Component {
         this.fetchStepCountAvg();
       }
 
-      if (!this.state.fetchedHistory){
-        this.props.fetchStepsFromPeriod(nextProp.user.uid)
-        this.setState({fetchedHistory: true})
-      }
-
       if (this.state.stepObserver === null) {
         store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
         let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
@@ -98,6 +93,11 @@ class StepScreen extends Component {
         });
 
         this.setState({ stepObserver: sub });
+      }
+
+      if (!this.state.fetchedHistory && !nextProp.stepInfo.isSyncing){
+        this.props.fetchStepsFromPeriod(nextProp.user.uid)
+        this.setState({fetchedHistory: true})
       }
     }
   }
@@ -148,7 +148,7 @@ class StepScreen extends Component {
     /* DO SOMETHING WITH THE STEPS */
     console.log("CONVERTED: ", stepsToConvert, " STEPS");
 
-    // Uppdaterar lokala state
+    // Uppdaterar lokala state, nu måste även history hämtas på nytt
     this.setState({ convertedSteps: this.state.steps, fetchedHistory: false });
 
     // Uppdaterar Redux state
@@ -172,7 +172,7 @@ class StepScreen extends Component {
       } else {
         let steps = Math.round(results.value);
 
-        // Uppdaterar State i komponenten
+        // Uppdaterar State i komponenten, Nu måste även History hämtas på nytt
         this.setState({ steps: steps, isFetchingSteps: false, fetchedHistory: false });
 
         // Jämför redux med nuvarande
