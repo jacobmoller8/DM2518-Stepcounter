@@ -24,6 +24,13 @@ class SplashScreen extends Component {
     componentDidMount = () => {
         this.checkIfAuthorized()
     }
+
+    componentWillReceiveProps(nextProp) {
+        if (nextProp.user.uid !== "") {
+            this.props.navigation.navigate("StepScreen")
+        }
+    }
+
     checkIfAuthorized = () => {
         var that = this
         firebase.auth().onAuthStateChanged(function (user) {
@@ -31,7 +38,6 @@ class SplashScreen extends Component {
                 console.log(user.email + " is now Authorized")
                 if (!store.getState().user.isLoadingUser) {
                     that.props.loadUser(user.uid)
-                    that.props.navigation.navigate("StepScreen")
                 }
             } else {
                 that.props.navigation.navigate("LoginScreen")
@@ -58,6 +64,7 @@ class SplashScreen extends Component {
 
 const mapStateToProps = state => {
     return {
+        user: state.user
     }
 };
 
