@@ -20,6 +20,9 @@ class SplashScreen extends Component {
     }
     componentWillMount = () => {
         firebase.initializeApp(firebaseConfig)
+        if (Platform.OS === "ios") {
+            this.props.initAppleHK;
+          }
     }
     componentDidMount = () => {
         this.checkIfAuthorized()
