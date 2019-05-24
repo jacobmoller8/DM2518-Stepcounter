@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
-  SafeAreaView
+  SafeAreaView,
+  Animated
 } from "react-native";
 import { withNavigation } from "react-navigation";
 import { connect } from "react-redux";
@@ -27,6 +28,7 @@ import Header from "../../components/Header";
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
+import AnimatedBar from "react-native-animated-bar";
 
 BackgroundTask.define(async () => {
   let steps = store.getState().stepInfo.steps;
@@ -55,9 +57,20 @@ class StepScreen extends Component {
       date: "",
       month: "",
       goal: 10000,
-      isFetchingSteps: false
+      isFetchingSteps: false,
+      diff: 0
     };
   }
+
+  stepsToUseTickerValue = new Animated.Value(0);
+
+  animateStepsToUseTickerValue = () => {
+    Animated.timing(this.stepsToUseTickerValue, {
+      toValue: this.state.diff,
+      duration: 2000
+    });
+  };
+
   componentWillMount() {
     if (Platform.OS === "ios") {
       this.props.initAppleHK;
@@ -98,6 +111,7 @@ class StepScreen extends Component {
 
   componentDidMount() {
     BackgroundTask.schedule();
+    this.animateStepsToUseTickerValue();
   }
 
   componentWillUnmount() {
@@ -174,6 +188,7 @@ class StepScreen extends Component {
           // ----------------------------------------------------------
           // HÄR KAN EN ANIMATION GÖRAS MED SKILLNADEN PÅ STEPS I LOKALA STATE OCH REDUX INNAN DE SYNKAS
           let diff = steps - this.props.stepInfo.steps;
+          this.setState({ diff });
           console.log("Difference to animate: ", diff);
           // ----------------------------------------------------------
 
@@ -259,9 +274,7 @@ class StepScreen extends Component {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.stepFont}>
-          {this.state.steps - this.state.convertedSteps}
-        </Text>
+        <Text style={styles.stepFont}>{this.state.diff}</Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>
 
         <Text style={styles.avgFont}>Daily Average: {this.state.avg}</Text>
