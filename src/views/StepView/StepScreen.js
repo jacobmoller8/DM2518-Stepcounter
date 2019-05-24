@@ -9,7 +9,8 @@ import {
   Dimensions,
   Image,
   SafeAreaView,
-  Animated
+  Animated,
+  StatusBar
 } from "react-native";
 import { withNavigation } from "react-navigation";
 import { connect } from "react-redux";
@@ -25,6 +26,7 @@ import BackgroundTask from "react-native-background-task";
 import Cards from "./CardsScroll";
 import ProgressBar from "../../components/ProgressBar";
 import Header from "../../components/Header";
+import StepsToUse from "../../components/StepsToUse";
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
@@ -75,6 +77,7 @@ class StepScreen extends Component {
   componentWillMount() {
     this.fetchStepCountData();
     this.getCurrentDate();
+    StatusBar.setHidden(true);
   }
 
   componentWillReceiveProps(nextProp) {
@@ -83,7 +86,7 @@ class StepScreen extends Component {
       nextProp.user.uid !== ""
     ) {
       if (this.state.steps === 0) {
-        if (!initialStepFetch) {
+        if (!this.state.initialStepFetch) {
           this.fetchStepCountData();
           this.setState({ initialStepFetch: true });
         }
@@ -291,6 +294,8 @@ class StepScreen extends Component {
             />
           </TouchableOpacity>
         </View>
+
+        <StepsToUse />
 
         <Text style={styles.stepFont}>{this.state.stepsToConvert}</Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>

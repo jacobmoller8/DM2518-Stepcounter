@@ -1,17 +1,8 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  Animated,
-  Easing
-} from "react-native";
-import AnimatedBar from "react-native-animated-bar";
+import { StyleSheet, Text, View, Dimensions, Animated } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
-const lastValue = 40;
-const newValue = 280;
+
 export default class Header extends Component {
   constructor(props) {
     super(props);
