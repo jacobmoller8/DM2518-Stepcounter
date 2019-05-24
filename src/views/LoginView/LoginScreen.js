@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, SafeAreaView, Image } from "react-native";
+import { View, Text, StyleSheet, Button, Platform, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, SafeAreaView, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 import { loadUser } from "../../redux/actions/userAction";
+import {initAppleHK} from "../../redux/actions/stepActions"
 
 import { firebaseConfig } from "../../firebaseConfig";
 import * as firebase from 'firebase';
@@ -28,6 +29,9 @@ class LoginScreen extends Component {
 
     componentWillReceiveProps(nextProp) {
         if (nextProp.user.uid !== "") {
+            if (Platform.OS === "ios") {
+                this.props.initAppleHK;
+              }
             this.props.navigation.navigate("StepScreen")
         }
     }
@@ -46,6 +50,7 @@ class LoginScreen extends Component {
             if (user) {
                 console.log(user.email + " is now Authorized")
                 if (!store.getState().user.isLoadingUser) {
+                    console.log("trigger in logIn")
                     that.props.loadUser(user.uid)
                 }
             } else {
@@ -58,13 +63,13 @@ class LoginScreen extends Component {
         console.log(this.state.email)
         console.log(this.state.password)
         var that = this
-        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
+        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then(this.checkIfAuthorized()).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
             console.log(errorCode)
             that.setState({ errorMessage: errorMessage })
             console.log(errorMessage)
-        }).then(this.checkIfAuthorized())
+        })
     }
 
     render() {
@@ -146,6 +151,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        initAppleHK: dispatch(initAppleHK()),
         loadUser: (ownProps) => dispatch(loadUser(ownProps))
     }
 };

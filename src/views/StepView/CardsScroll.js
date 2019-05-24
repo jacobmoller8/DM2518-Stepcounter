@@ -75,7 +75,7 @@ export default class Cards extends Component {
               source={require("../../assets/cardNoice.png")}
               style={styles.cardNoiceOverlay}
             />
-            <Text style={{ color: "white", fontSize: 80 }}>89,9</Text>
+            <Text style={{ color: "white", fontSize: 80 }}>{this.props.weeklyConverted * 0.78}</Text>
             <Text style={{ color: "white", fontSize: 20 }}>
               km of car emisson
             </Text>
@@ -87,7 +87,7 @@ export default class Cards extends Component {
               source={require("../../assets/cardNoice.png")}
               style={styles.cardNoiceOverlay}
             />
-            <Text style={{ color: "white", fontSize: 80 }}>162,8</Text>
+            <Text style={{ color: "white", fontSize: 80 }}>{this.props.allTimeConverted * 0.78}</Text>
             <Text style={{ color: "white", fontSize: 20 }}>
               km of car emisson
             </Text>

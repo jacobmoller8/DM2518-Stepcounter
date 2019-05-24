@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Button,
-  Platform,
   NativeAppEventEmitter,
   TouchableOpacity,
   Dimensions,
@@ -61,18 +60,14 @@ class StepScreen extends Component {
     };
   }
   componentWillMount() {
-    if (Platform.OS === "ios") {
-      this.props.initAppleHK;
-    }
+    this.fetchStepCountData();
     this.getCurrentDate();
   }
 
   componentWillReceiveProps(nextProp) {
+    console.log("NEXT PROP: ", nextProp)
     if (nextProp.stepInfo.status === "initialized" && nextProp.user.uid !== "") {
-      if (this.state.steps === 0) {
-        // Kallas bara om appen startar för första gången, annars tar eventListnern hand om detta
-        this.fetchStepCountData();
-      }
+
       if (!nextProp.stepInfo.conStepStatus) {
         this.props.loadConvertedSteps(nextProp.user.uid);
       }
@@ -87,7 +82,7 @@ class StepScreen extends Component {
       }
 
       if (this.state.stepObserver === null) {
-        store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
+        store.getState().stepInfo.HK.initStepCountObserver({}, () => { });
         let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
           this.fetchStepCountData();
         });
@@ -95,9 +90,9 @@ class StepScreen extends Component {
         this.setState({ stepObserver: sub });
       }
 
-      if (!this.state.fetchedHistory && !nextProp.stepInfo.isSyncing){
+      if (!this.state.fetchedHistory && !nextProp.stepInfo.isSyncing) {
         this.props.fetchStepsFromPeriod(nextProp.user.uid)
-        this.setState({fetchedHistory: true})
+        this.setState({ fetchedHistory: true })
       }
     }
   }
@@ -133,7 +128,7 @@ class StepScreen extends Component {
           this.setState({ error: err.message });
           return;
         } else {
-          results.forEach(function(item) {
+          results.forEach(function (item) {
             sum += item.value;
             counter += 1;
           });
@@ -143,13 +138,15 @@ class StepScreen extends Component {
   };
 
   convertSteps = () => {
-    let stepsToConvert = this.state.steps - this.state.convertedSteps;
-
     /* DO SOMETHING WITH THE STEPS */
-    console.log("CONVERTED: ", stepsToConvert, " STEPS");
+    console.log("CONVERTED: ", this.state.stepsToConvert, " STEPS");
 
     // Uppdaterar lokala state, nu måste även history hämtas på nytt
-    this.setState({ convertedSteps: this.state.steps, fetchedHistory: false });
+    this.setState({
+      convertedSteps: this.state.steps,
+      stepsToConvert: 0,
+      fetchedHistory: false
+    });
 
     // Uppdaterar Redux state
     this.props.updateStepState(this.state.steps, this.state.steps);
@@ -173,7 +170,12 @@ class StepScreen extends Component {
         let steps = Math.round(results.value);
 
         // Uppdaterar State i komponenten, Nu måste även History hämtas på nytt
-        this.setState({ steps: steps, isFetchingSteps: false, fetchedHistory: false });
+        this.setState({
+          steps: steps,
+          isFetchingSteps: false,
+          fetchedHistory: false,
+          stepsToConvert: steps - this.state.convertedSteps
+        });
 
         // Jämför redux med nuvarande
         if (this.props.stepInfo.steps !== steps) {
@@ -232,7 +234,7 @@ class StepScreen extends Component {
     if (this.state.isFetchingSteps) {
       // Show spinner
     } else {
-     // Dont show spinner
+      // Dont show spinner
     }
 
     let curStyle = styles.workingFont;
@@ -265,7 +267,7 @@ class StepScreen extends Component {
         </View>
 
         <Text style={styles.stepFont}>
-          {this.state.steps - this.state.convertedSteps}
+          {this.state.stepsToConvert}
         </Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>
 
@@ -286,7 +288,7 @@ class StepScreen extends Component {
         </TouchableOpacity>
 
         <View style={{ position: "absolute", bottom: 0 }}>
-          <Cards steps={this.state.steps} />
+          <Cards steps={this.state.steps} allTimeConverted={this.props.stepInfo.allTimeConverted} weeklyConverted={this.props.stepInfo.weeklyConverted} />
         </View>
       </SafeAreaView>
     );
@@ -303,7 +305,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    initAppleHK: dispatch(initAppleHK()),
     updateStepState: (steps, converted) =>
       dispatch(updateStepState(steps, converted)),
     syncStepsToFirebase: ownProps => dispatch(syncStepsToFirebase(ownProps)),

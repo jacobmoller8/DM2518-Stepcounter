@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, Image } from "react-native";
+import { View, Text, StyleSheet, Button,Platform, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
-
+import {initAppleHK} from "../../redux/actions/stepActions"
 import { loadUser } from "../../redux/actions/userAction";
 import { store } from "../../redux/store/store";
 
@@ -27,6 +27,9 @@ class SplashScreen extends Component {
 
     componentWillReceiveProps(nextProp) {
         if (nextProp.user.uid !== "") {
+            if (Platform.OS === "ios") {
+                this.props.initAppleHK;
+              }
             this.props.navigation.navigate("StepScreen")
         }
     }
@@ -37,6 +40,7 @@ class SplashScreen extends Component {
             if (user) {
                 console.log(user.email + " is now Authorized")
                 if (!store.getState().user.isLoadingUser) {
+                    console.log("trigger in splash screen")
                     that.props.loadUser(user.uid)
                 }
             } else {
@@ -70,6 +74,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        initAppleHK: dispatch(initAppleHK()),
         loadUser: (ownProps) => dispatch(loadUser(ownProps))
     }
 };
