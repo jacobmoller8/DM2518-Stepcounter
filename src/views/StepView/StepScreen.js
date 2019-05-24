@@ -210,10 +210,12 @@ class StepScreen extends Component {
             convertedSteps: this.state.convertedSteps,
             mode: "active"
           };
-          if (this.props.stepinfo.conStepStatus) {
+          try{
             if (this.props.stepinfo.conStepStatus === "fetched") {
               this.props.syncStepsToFirebase(inputObj);
             }
+          }catch{
+            
           }
 
         }
