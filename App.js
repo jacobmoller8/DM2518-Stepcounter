@@ -8,6 +8,7 @@ import RegisterScreen from "./src/views/RegisterView/RegisterScreen";
 import StepScreen from "./src/views/StepView/StepScreen";
 import ProfileScreen from "./src/views/ProfileView/ProfileScreen";
 import PicturePickerScreen from "./src/views/PicturePickerView/PicturePickerScreen";
+import ForgotPassScreen from "./src/views/ForgotPassView/ForgotPassScreen";
 
 class App extends Component {
   componentWillMount() {
@@ -31,11 +32,18 @@ const AppStackNavigator = createStackNavigator({
     screen: RegisterScreen,
     navigationOptions: { header: null }
   },
+  ForgotPassScreen: {
+    screen: ForgotPassScreen,
+    navigationOptions: { header: null }
+  },
   StepScreen: {
     screen: StepScreen,
     navigationOptions: { header: null, gesturesEnabled: false }
   },
-  ProfileScreen: { screen: ProfileScreen, navigationOptions: { header: null } },
+  ProfileScreen: {
+    screen: ProfileScreen,
+    navigationOptions: { header: null }
+  },
   PicturePickerScreen: {
     screen: PicturePickerScreen,
     navigationOptions: { header: null }
