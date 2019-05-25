@@ -1,17 +1,40 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Animated } from "react-native";
 
 export default class StepsToUse extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      value: 0
+    };
   }
+
+  componentDidMount() {
+    this.stepsToConvert.addListener(newvalue => {
+      this.setState({ value: Math.floor(newvalue.value) });
+    });
+  }
+
+  componentWillReceiveProps() {
+    this.animateStepsToConvert();
+  }
+
+  stepsToConvert = new Animated.Value(this.props.stepsToConvert);
+
+  animateStepsToConvert = () => {
+    if (this.props.stepsToConvert !== undefined) {
+      Animated.timing(this.stepsToConvert, {
+        toValue: this.props.stepsToConvert,
+        duration: 2000
+      });
+    }
+  };
 
   render() {
     return (
       <View>
-        <Text>0</Text>
+        <Text>{this.props.stepsToConvert}</Text>
         <Text>steps to use</Text>
       </View>
     );

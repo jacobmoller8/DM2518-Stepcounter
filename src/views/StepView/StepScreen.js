@@ -23,12 +23,13 @@ import {
   loadConvertedSteps,
   fetchStepsFromPeriod
 } from "../../redux/actions/stepActions";
-import { switchScreen } from '../../redux/actions/screenActions'
+import { switchScreen } from "../../redux/actions/screenActions";
 import BackgroundTask from "react-native-background-task";
 import Cards from "./CardsScroll";
 import ProgressBar from "../../components/ProgressBar";
 import Header from "../../components/Header";
 import StepsToUse from "../../components/StepsToUse";
+import LoadingSpinner from "../../components/loadingSpinner";
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
@@ -60,7 +61,8 @@ class StepScreen extends Component {
       goal: 10000,
       isFetchingSteps: false,
       initialStepFetch: false,
-      outdatedHistory: false
+      outdatedHistory: false,
+      diff: null
     };
   }
 
@@ -83,7 +85,7 @@ class StepScreen extends Component {
 
   componentDidMount() {
     if (this.state.stepObserver === null) {
-      store.getState().stepInfo.HK.initStepCountObserver({}, () => { });
+      store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
       let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
         this.fetchStepCountData();
       });
@@ -94,29 +96,28 @@ class StepScreen extends Component {
     this.animateStepsToUseTickerValue();
   }
 
-
   componentWillReceiveProps(nextProp) {
     if (nextProp.screen === "steps") {
       // Loads converted steps if app is reloaded
 
       if (this.state.stepsToConvert === undefined) {
-        this.props.loadConvertedSteps(this.props.user.uid)
+        this.props.loadConvertedSteps(this.props.user.uid);
         this.setState({
-          stepsToConvert: this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
-        })
+          stepsToConvert:
+            this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
+        });
       }
-
 
       // Reloads stats, outdatedHistory is set as true when user converts steps
       if (this.state.outdatedHistory) {
-        this.props.fetchStepsFromPeriod(this.props.user.uid)
-        this.setState({ outdatedHistory: false })
+        this.props.fetchStepsFromPeriod(this.props.user.uid);
+        this.setState({ outdatedHistory: false });
       }
 
       // Performs initial fetch of steps if user logs out and reloads app
       if (!this.state.initialStepFetch && this.props.stepInfo.steps === 0) {
         this.fetchStepCountData();
-        this.setState({ initialStepFetch: true })
+        this.setState({ initialStepFetch: true });
       }
     }
   }
@@ -125,11 +126,12 @@ class StepScreen extends Component {
     this.state.stepObserver.remove();
   }
 
-  componentWillUpdate(){
+  componentWillUpdate() {
     if (this.state.stepsToConvert === undefined) {
       this.setState({
-        stepsToConvert: this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
-      })
+        stepsToConvert:
+          this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
+      });
     }
   }
 
@@ -138,7 +140,10 @@ class StepScreen extends Component {
     console.log("CONVERTED: ", this.state.stepsToConvert, " STEPS");
 
     // Uppdaterar Redux state
-    this.props.updateStepState(this.props.stepInfo.steps, this.props.stepInfo.steps);
+    this.props.updateStepState(
+      this.props.stepInfo.steps,
+      this.props.stepInfo.steps
+    );
 
     // Uppdaterar Firebase
     let inputObj = {
@@ -150,8 +155,7 @@ class StepScreen extends Component {
     this.props.syncStepsToFirebase(inputObj);
 
     // update state that new history fetch is needed, also zeroes stepsToConvert
-    this.setState({ outdatedHistory: true, stepsToConvert: 0 })
-
+    this.setState({ outdatedHistory: true, stepsToConvert: 0 });
   };
 
   fetchStepCountData = () => {
@@ -175,15 +179,17 @@ class StepScreen extends Component {
           // Update steps to convert
           this.setState({
             stepsToConvert: steps - this.props.stepInfo.convertedSteps
-          })
+          });
 
           // Uppdaterar Redux
-          this.props.updateStepState(
+          this.props.updateStepState(steps, this.props.stepInfo.convertedSteps);
+
+          console.log(
+            "STEPS: ",
             steps,
+            " converted steps: ",
             this.props.stepInfo.convertedSteps
           );
-
-          console.log("STEPS: ", steps, " converted steps: ", this.props.stepInfo.convertedSteps)
 
           // Uppdaterar Firebase
           let inputObj = {
@@ -193,7 +199,6 @@ class StepScreen extends Component {
             mode: "active"
           };
           this.props.syncStepsToFirebase(inputObj);
-
         }
       }
     });
@@ -220,12 +225,11 @@ class StepScreen extends Component {
   };
 
   onProfileClick = () => {
-    this.props.switchScreen("profile")
-    this.props.navigation.navigate("ProfileScreen")
-  }
+    this.props.switchScreen("profile");
+    this.props.navigation.navigate("ProfileScreen");
+  };
 
   render() {
-
     if (this.state.isFetchingSteps) {
       // Show spinner
     } else {
@@ -242,7 +246,7 @@ class StepScreen extends Component {
         <View style={{ height: 135 }}>
           <Header
             currentSteps={this.props.stepInfo.steps}
-            lastStepValue={0}
+            lastStepValue={this.state.diff}
             lastConvertedSteps={200}
             date={this.state.date}
             month={this.state.month}
@@ -261,12 +265,14 @@ class StepScreen extends Component {
           </TouchableOpacity>
         </View>
 
-        <StepsToUse />
+        <StepsToUse stepsToConvert={this.state.stepsToConvert} />
 
         <Text style={styles.stepFont}>{this.state.stepsToConvert}</Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>
 
-        <Text style={styles.avgFont}>Daily Average: {this.props.stepInfo.stepAvg}</Text>
+        <Text style={styles.avgFont}>
+          Daily Average: {this.props.stepInfo.stepAvg}
+        </Text>
         <Text style={curStyle}>Status: {this.state.error}</Text>
 
         <TouchableOpacity
