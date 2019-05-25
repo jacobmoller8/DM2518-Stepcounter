@@ -85,7 +85,7 @@ class StepScreen extends Component {
 
   componentDidMount() {
     if (this.state.stepObserver === null) {
-      store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
+      store.getState().stepInfo.HK.initStepCountObserver({}, () => { });
       let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
         this.fetchStepCountData();
       });
@@ -178,13 +178,8 @@ class StepScreen extends Component {
 
           // Update steps to convert
           this.setState({
-<<<<<<< HEAD
-            stepsToConvert: steps - this.props.stepInfo.convertedSteps, isFetchingSteps: false
-          })
-=======
             stepsToConvert: steps - this.props.stepInfo.convertedSteps
           });
->>>>>>> aa472481c3caabc61c1cdcfb197733c03f351b86
 
           // Uppdaterar Redux
           this.props.updateStepState(steps, this.props.stepInfo.convertedSteps);

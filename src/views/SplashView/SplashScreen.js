@@ -38,7 +38,7 @@ class SplashScreen extends Component {
     }
     componentWillMount = () => {
         // RESET ALL REDUCERS
-        this.resetReducers()
+        // this.resetReducers()
         // RESET ALL REDUCERS
 
         firebase.initializeApp(firebaseConfig);
