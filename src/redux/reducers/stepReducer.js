@@ -11,6 +11,15 @@ const initialState = {
     loadingStepAvgSatus: 'not loaded'
 }
 
+const logOutState =  {
+    steps: 0,
+    convertedSteps: 0,
+    conStepStatus: 'not fetched',
+    stepsFromPeriodStatus: 'not fetched',
+    stepAvgStatus: 'not set',
+    loadingStepAvgSatus: 'not loaded'
+}
+
 export default function stepReducer(state = initialState, { type, payload }) {
     switch (type) {
         case INIT_APPLE_HK:
@@ -59,7 +68,7 @@ export default function stepReducer(state = initialState, { type, payload }) {
         case ERROR_LOADING_STEP_AVG:
             return { ...state, loadingStepAvgSatus: payload.loadingStepAvgSatus };
         case RESET_STEPS:
-            return initialState;
+            return {...state,logOutState};
 
 
         default:

@@ -23,6 +23,7 @@ import {
   loadConvertedSteps,
   fetchStepsFromPeriod
 } from "../../redux/actions/stepActions";
+import { switchScreen } from '../../redux/actions/screenActions'
 import BackgroundTask from "react-native-background-task";
 import Cards from "./CardsScroll";
 import ProgressBar from "../../components/ProgressBar";
@@ -73,7 +74,9 @@ class StepScreen extends Component {
   };
 
   componentWillMount() {
-    this.fetchStepCountData();
+    if (this.props.screen === "steps") {
+      this.fetchStepCountData();
+    }
     this.getCurrentDate();
     StatusBar.setHidden(true);
   }
@@ -93,26 +96,28 @@ class StepScreen extends Component {
 
 
   componentWillReceiveProps(nextProp) {
+    if (nextProp.screen === "steps") {
+      // Loads converted steps if app is reloaded
 
-    // Loads converted steps if app is reloaded
-    if (this.state.stepsToConvert === undefined){
-      this.props.loadConvertedSteps(this.props.user.uid)
-      this.setState({
-        stepsToConvert: this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
-      })
-    }
+      if (this.state.stepsToConvert === undefined) {
+        this.props.loadConvertedSteps(this.props.user.uid)
+        this.setState({
+          stepsToConvert: this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
+        })
+      }
 
 
-    // Reloads stats, outdatedHistory is set as true when user converts steps
-    if (this.state.outdatedHistory){
-      this.props.fetchStepsFromPeriod(this.props.user.uid)
-      this.setState({outdatedHistory: false})
-    }
+      // Reloads stats, outdatedHistory is set as true when user converts steps
+      if (this.state.outdatedHistory) {
+        this.props.fetchStepsFromPeriod(this.props.user.uid)
+        this.setState({ outdatedHistory: false })
+      }
 
-    // Performs initial fetch of steps if user logs out and reloads app
-    if (!this.state.initialStepFetch && this.props.stepInfo.steps === 0) {
-      this.fetchStepCountData();
-      this.setState({ initialStepFetch: true})
+      // Performs initial fetch of steps if user logs out and reloads app
+      if (!this.state.initialStepFetch && this.props.stepInfo.steps === 0) {
+        this.fetchStepCountData();
+        this.setState({ initialStepFetch: true })
+      }
     }
   }
 
@@ -120,6 +125,13 @@ class StepScreen extends Component {
     this.state.stepObserver.remove();
   }
 
+  componentWillUpdate(){
+    if (this.state.stepsToConvert === undefined) {
+      this.setState({
+        stepsToConvert: this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
+      })
+    }
+  }
 
   convertSteps = () => {
     /* DO SOMETHING WITH THE STEPS */
@@ -138,7 +150,7 @@ class StepScreen extends Component {
     this.props.syncStepsToFirebase(inputObj);
 
     // update state that new history fetch is needed, also zeroes stepsToConvert
-    this.setState({outdatedHistory: true, stepsToConvert: 0})
+    this.setState({ outdatedHistory: true, stepsToConvert: 0 })
 
   };
 
@@ -207,7 +219,13 @@ class StepScreen extends Component {
     this.setState({ date: this.date, month: this.months[this.month] });
   };
 
+  onProfileClick = () => {
+    this.props.switchScreen("profile")
+    this.props.navigation.navigate("ProfileScreen")
+  }
+
   render() {
+
     if (this.state.isFetchingSteps) {
       // Show spinner
     } else {
@@ -234,7 +252,7 @@ class StepScreen extends Component {
         <View style={styles.profilePicRow}>
           <TouchableOpacity
             style={styles.profilePic}
-            onPress={() => this.props.navigation.navigate("ProfileScreen")}
+            onPress={() => this.onProfileClick()}
           >
             <Image
               style={styles.picture}
@@ -280,7 +298,8 @@ const mapStateToProps = state => {
   return {
     user: state.user,
     stepInfo: state.stepInfo,
-    profilePic: state.user.profilePic
+    profilePic: state.user.profilePic,
+    screen: state.screen
   };
 };
 
@@ -291,7 +310,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(updateStepState(steps, converted)),
     syncStepsToFirebase: ownProps => dispatch(syncStepsToFirebase(ownProps)),
     loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps)),
-    fetchStepsFromPeriod: uid => dispatch(fetchStepsFromPeriod(uid))
+    fetchStepsFromPeriod: uid => dispatch(fetchStepsFromPeriod(uid)),
+    switchScreen: ownProps => dispatch(switchScreen(ownProps))
   };
 };
 

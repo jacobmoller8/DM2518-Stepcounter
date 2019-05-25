@@ -4,6 +4,7 @@ import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 import { regUser, loadUser } from '../../redux/actions/userAction'
 import { saveStepAvg } from '../../redux/actions/stepActions'
+import {switchScreen} from "../../redux/actions/screenActions"
 
 
 import * as firebase from 'firebase';
@@ -39,6 +40,7 @@ class RegisterScreen extends Component {
         }
         if(nextProps.stepInfo.stepAvgStatus === "done")  
         {
+                this.props.switchScreen("steps")
                 this.props.navigation.navigate("StepScreen")
             }
     }
@@ -71,6 +73,11 @@ class RegisterScreen extends Component {
             console.log(errorMessage)
         }).then(this.checkIfAuthorized)
 
+    }
+
+    onBackClick = () => {
+        this.props.switchScreen('login')
+        this.props.navigation.navigate("LoginScreen")
     }
 
     render() {
@@ -160,7 +167,7 @@ class RegisterScreen extends Component {
 
                 <Text style={styles.errorText}>{this.state.errorMessage}</Text>
 
-                <TouchableOpacity style={styles.backButton} onPress={() => this.props.navigation.navigate("LoginScreen")}>
+                <TouchableOpacity style={styles.backButton} onPress={() => this.onBackClick()}>
                     <Text style={styles.registerText}>BACK</Text>
                 </TouchableOpacity>
 
@@ -182,7 +189,8 @@ const mapDispatchToProps = dispatch => {
     return {
         regUser: (ownProps) => dispatch(regUser(ownProps)),
         saveStepAvg: ownProps => dispatch(saveStepAvg(ownProps)),
-        loadUser: ownProps => dispatch(loadUser(ownProps))
+        loadUser: ownProps => dispatch(loadUser(ownProps)),
+        switchScreen: ownProps => dispatch(switchScreen(ownProps))
 
     }
 };

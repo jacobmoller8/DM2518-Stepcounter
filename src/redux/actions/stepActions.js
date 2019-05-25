@@ -3,6 +3,7 @@ import firebase from 'firebase';
 import 'firebase/firestore'
 import AppleHealthKit from 'rn-apple-healthkit';
 import BackgroundTask from 'react-native-background-task'
+import {switchScreen} from '../actions/screenActions'
 
 export const INIT_APPLE_HK = "INIT_APPLE_HK";
 export const ERROR_INIT_APPLE_HK = "ERROR_INIT_APPLE_HK";
@@ -314,6 +315,7 @@ export function loadStepAvg(uid) {
 }
 
 export function resetSteps() {
+    store.dispatch(switchScreen('login'))
     return {
         type: RESET_STEPS
     }

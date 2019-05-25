@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Dimensions, TextInput, TouchableOpacity, KeyboardAvoidingView, SafeAreaView, Image } from "react-native";
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
+import { switchScreen } from "../../redux/actions/screenActions"
 
 
 import * as firebase from 'firebase';
@@ -37,6 +38,11 @@ class ForgotPassScreen extends Component {
             that.setState({ message: errorMessage, messageColor: "red" })
         });
 
+    }
+
+    onBackClick = () => {
+        this.props.switchScreen('login')
+        this.props.navigation.navigate("LoginScreen")
     }
 
     render() {
@@ -76,7 +82,7 @@ class ForgotPassScreen extends Component {
 
                 <Text style={[styles.message, { color: this.state.messageColor }]}>{this.state.message}</Text>
 
-                <TouchableOpacity style={styles.backButton} onPress={() => this.props.navigation.navigate("LoginScreen")}>
+                <TouchableOpacity style={styles.backButton} onPress={() => this.onBackClick()}>
                     <Text style={styles.registerText}>BACK</Text>
                 </TouchableOpacity>
 
@@ -94,6 +100,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        switchScreen: ownProps => dispatch(switchScreen(ownProps))
     }
 };
 

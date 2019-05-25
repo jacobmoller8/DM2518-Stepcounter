@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, Button, Platform, Dimensions, TextInput, Toucha
 import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 import { loadUser } from "../../redux/actions/userAction";
-import { initAppleHK } from "../../redux/actions/stepActions"
+import { initAppleHK } from "../../redux/actions/stepActions";
+import { switchScreen} from "../../redux/actions/screenActions"
 
 import { firebaseConfig } from "../../firebaseConfig";
 import * as firebase from 'firebase';
@@ -58,6 +59,16 @@ class LoginScreen extends Component {
         })
     }
 
+    onRegisterClick = () => {
+        this.props.switchScreen("register")
+        this.props.navigation.navigate("RegisterScreen")
+    }
+
+    onForgotPassClick = () => {
+        this.props.switchScreen("forgotPass")
+        this.props.navigation.navigate("ForgotPassScreen")
+    }
+
     render() {
         return (
             <SafeAreaView style={styles.flexView}>
@@ -104,7 +115,7 @@ class LoginScreen extends Component {
                             <Text style={styles.loginText}>LOG IN</Text>
                         </TouchableOpacity>
                         <View style={styles.card}>
-                            <TouchableOpacity style={{ zIndex: 105 }} onPress={() => this.props.navigation.navigate("ForgotPassScreen")}>
+                            <TouchableOpacity style={{ zIndex: 105 }} onPress={() => this.onForgotPassClick()}>
                                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                             </TouchableOpacity>
                             <Image
@@ -115,7 +126,7 @@ class LoginScreen extends Component {
                                 source={require("../../assets/turtle.png")}
                             />
 
-                            <TouchableOpacity style={styles.registerButton} onPress={() => this.props.navigation.navigate("RegisterScreen")}>
+                            <TouchableOpacity style={styles.registerButton} onPress={() => this.onRegisterClick()}>
                                 <Text style={styles.registerText}>SIGN UP</Text>
                             </TouchableOpacity>
                         </View>
@@ -141,7 +152,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         initAppleHK: dispatch(initAppleHK()),
-        loadUser: (ownProps) => dispatch(loadUser(ownProps))
+        loadUser: (ownProps) => dispatch(loadUser(ownProps)),
+        switchScreen: (ownProps) => dispatch(switchScreen(ownProps))
     }
 };
 

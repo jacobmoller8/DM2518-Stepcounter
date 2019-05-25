@@ -6,6 +6,7 @@ import thunk from "redux-thunk";
 // REDUCERS
 import userReducer from "../reducers/userReducer";
 import stepReducer from "../reducers/stepReducer";
+import screenReducer from "../reducers/screenReducer";
 
 const persistConfig = {
     key: "root",
@@ -15,7 +16,8 @@ const persistConfig = {
 
 const allReducers = combineReducers({
     user: userReducer,
-    stepInfo: stepReducer
+    stepInfo: stepReducer,
+    screen: screenReducer
 })
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

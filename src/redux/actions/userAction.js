@@ -98,14 +98,7 @@ export function loadUser(uid) {
             })
         });
     }
-    /*
-        return {
-            type: LOAD_USER,
-            payload: {
-                uid: inputObj.uid,
-                email: inputObj.email
-            }
-        }*/
+
 }
 
 export function logoutUser() {

@@ -6,6 +6,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { logoutUser } from "../../redux/actions/userAction";
 import { resetSteps } from "../../redux/actions/stepActions"
+import { switchScreen} from "../../redux/actions/screenActions"
 
 import * as firebase from 'firebase';
 import "firebase/auth";
@@ -19,15 +20,20 @@ class ProfileScreen extends Component {
     }
 
     signOutPressed = () => {
-
         firebase.auth().signOut().then(() => {
             this.props.logoutUser()
             this.props.resetSteps()
+            this.props.switchScreen('login')
             this.props.navigation.navigate("LoginScreen");
         }).catch((err) => {
             console.log("error " + err)
         })
 
+    }
+
+    onBackClick = () => {
+        this.props.switchScreen("steps")
+        this.props.navigation.navigate("StepScreen")
     }
 
 
@@ -49,7 +55,7 @@ class ProfileScreen extends Component {
                     {this.props.user.email}
                 </Text>
 
-                <TouchableOpacity style={styles.backButton} onPress={() => this.props.navigation.navigate("StepScreen")}>
+                <TouchableOpacity style={styles.backButton} onPress={() => this.onBackClick()}>
                     <Text style={styles.backText}>
                         Back
                     </Text>
@@ -104,7 +110,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         logoutUser: () => { dispatch(logoutUser()) },
-        resetSteps: () => { dispatch(resetSteps()) }
+        resetSteps: () => { dispatch(resetSteps()) },
+        switchScreen: (ownProps) => dispatch(switchScreen(ownProps))
 
     }
 };

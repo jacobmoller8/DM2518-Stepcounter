@@ -4,6 +4,7 @@ import { withNavigation } from 'react-navigation';
 import { connect } from "react-redux";
 import {initAppleHK, loadConvertedSteps, fetchStepsFromPeriod, loadStepAvg} from "../../redux/actions/stepActions"
 import { loadUser } from "../../redux/actions/userAction";
+import {switchScreen} from "../../redux/actions/screenActions"
 import { store } from "../../redux/store/store";
 
 import { firebaseConfig } from "../../firebaseConfig";
@@ -23,6 +24,7 @@ class SplashScreen extends Component {
         firebase.initializeApp(firebaseConfig)
         if (Platform.OS === "ios") {
             this.props.initAppleHK;
+            this.props.switchScreen("splash")
           }
     }
     componentDidMount = () => {
@@ -31,10 +33,11 @@ class SplashScreen extends Component {
 
     componentWillReceiveProps(nextProp) {
         if (nextProp.user.isLoadingUser === "error"){
+            this.props.switchScreen("login")
             this.props.navigation.navigate("LoginScreen")
         }
         // Check that user has been loaded
-        if (nextProp.user.uid !== "") {
+        if (nextProp.user.uid !== "" && nextProp.screen === 'splash') {
             if(nextProp.stepInfo.loadingStepAvgSatus === 'not loaded'){
                 this.props.loadStepAvg(nextProp.user.uid)
             }
@@ -50,6 +53,7 @@ class SplashScreen extends Component {
 
             if (nextProp.stepInfo.stepsFromPeriodStatus === "fetched" && nextProp.stepInfo.status === "initialized"){
                 this.props.navigation.navigate("StepScreen")
+                this.props.switchScreen("steps")
             }
 
             
@@ -91,7 +95,8 @@ class SplashScreen extends Component {
 const mapStateToProps = state => {
     return {
         user: state.user,
-        stepInfo: state.stepInfo
+        stepInfo: state.stepInfo,
+        screen: state.screen
     }
 };
 
@@ -101,7 +106,8 @@ const mapDispatchToProps = dispatch => {
         loadUser: (ownProps) => dispatch(loadUser(ownProps)),
         loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps)),
         fetchStepsFromPeriod: ownProps => dispatch(fetchStepsFromPeriod(ownProps)),
-        loadStepAvg: ownProps => dispatch(loadStepAvg(ownProps))
+        loadStepAvg: ownProps => dispatch(loadStepAvg(ownProps)),
+        switchScreen: ownProps => dispatch(switchScreen(ownProps))
     }
 };
 
