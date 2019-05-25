@@ -24,8 +24,6 @@ export default class Header extends Component {
   componentWillReceiveProps() {
     this.animateNewStepsTicking();
     this.animateValue();
-
-    this.animateNewStepsTicking();
   }
 
   newStepsToUse = new Animated.Value(0);
