@@ -6,6 +6,7 @@ export const LOAD_USER = "LOAD_USER";
 export const USER_LOADED = "USER_LOADED";
 export const ERROR_LOADING_USER = "ERROR_LOADING_USER";
 export const LOGOUT_USER = "LOGOUT_USER";
+export const RESET_USER_REDUCER = "RESET_USER_REDUCER";
 
 import firebase from 'firebase';
 import 'firebase/firestore'
@@ -29,11 +30,11 @@ export function regUser(inputObj) {
             email: inputObj.email
 
         }).then(function () {
-                dispatch({
-                    type: REGISTERED_USER,
-                    payload: { registered: true }
-                })
+            dispatch({
+                type: REGISTERED_USER,
+                payload: { registered: true }
             })
+        })
             .catch(function (error) {
                 console.log("error writing user to database: ", error)
                 dispatch({
@@ -87,14 +88,14 @@ export function loadUser(uid) {
                 console.log("No such document!");
                 dispatch({
                     type: ERROR_LOADING_USER,
-                    payload: { isLoadingUser: 'error'}
+                    payload: { isLoadingUser: 'error' }
                 })
             }
         }).catch(function (error) {
             console.log("Error getting document:", error);
             dispatch({
                 type: ERROR_LOADING_USER,
-                payload: { isLoadingUser: 'error'}
+                payload: { isLoadingUser: 'error' }
             })
         });
     }
@@ -104,5 +105,13 @@ export function loadUser(uid) {
 export function logoutUser() {
     return {
         type: LOGOUT_USER
+    }
+}
+
+export function resetUserReducer() {
+    return dispatch => {
+        dispatch({
+            type: RESET_USER_REDUCER
+        })
     }
 }

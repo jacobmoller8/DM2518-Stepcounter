@@ -89,7 +89,7 @@ class StepScreen extends Component {
     AppState.addEventListener("change", this.handleAppStateChange);
 
     if (this.state.stepObserver === null) {
-      store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
+      store.getState().stepInfo.HK.initStepCountObserver({}, () => { });
       let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
         this.fetchStepCountData();
       });

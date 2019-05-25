@@ -1,4 +1,4 @@
-import { INIT_APPLE_HK, INITIALIZED_APPLE_HK, ERROR_INIT_APPLE_HK, START_SYNC_TO_FIREBASE, COMPLETE_SYNC_TO_FIREBASE, ERROR_SYNC_TO_FIREBASE, UPDATE_STEPS_STATE, REQUEST_CONVERTED_STEPS, RECIEVE_CONVERTED_STEPS, ERROR_CONVERTED_STEPS, RESET_STEPS, REQUEST_STEPS_FROM_PERIOD, RECIEVE_STEPS_FROM_PERIOD, ERROR_STEPS_FROM_PERIOD, SET_STEP_AVG, STEP_AVG_SET, ERROR_STEP_AVG, LOAD_STEP_AVG, STEP_AVG_LOADED, ERROR_LOADING_STEP_AVG } from '../actions/stepActions'
+import { INIT_APPLE_HK, INITIALIZED_APPLE_HK, ERROR_INIT_APPLE_HK, START_SYNC_TO_FIREBASE, COMPLETE_SYNC_TO_FIREBASE, ERROR_SYNC_TO_FIREBASE, UPDATE_STEPS_STATE, REQUEST_CONVERTED_STEPS, RECIEVE_CONVERTED_STEPS, ERROR_CONVERTED_STEPS, RESET_STEPS, REQUEST_STEPS_FROM_PERIOD, RECIEVE_STEPS_FROM_PERIOD, ERROR_STEPS_FROM_PERIOD, SET_STEP_AVG, STEP_AVG_SET, ERROR_STEP_AVG, LOAD_STEP_AVG, STEP_AVG_LOADED, ERROR_LOADING_STEP_AVG, RESET_STEP_REDUCER } from '../actions/stepActions'
 
 const initialState = {
     status: 'not initialized',
@@ -11,7 +11,7 @@ const initialState = {
     loadingStepAvgSatus: 'not loaded'
 }
 
-const logOutState =  {
+const logOutState = {
     steps: 0,
     convertedSteps: 0,
     conStepStatus: 'not fetched',
@@ -68,9 +68,9 @@ export default function stepReducer(state = initialState, { type, payload }) {
         case ERROR_LOADING_STEP_AVG:
             return { ...state, loadingStepAvgSatus: payload.loadingStepAvgSatus };
         case RESET_STEPS:
-            return {...state,logOutState};
-
-
+            return { ...state, logOutState };
+        case RESET_STEP_REDUCER:
+            return initialState
         default:
             return state;
     }

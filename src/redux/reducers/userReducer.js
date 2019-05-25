@@ -1,4 +1,4 @@
-import { REQUEST_REG_USER, REGISTERED_USER, ERROR_REG_USER, UPDATE_PROFILE_PIC, LOGOUT_USER, LOAD_USER, USER_LOADED, ERROR_LOADING_USER } from '../actions/userAction'
+import { REQUEST_REG_USER, REGISTERED_USER, ERROR_REG_USER, UPDATE_PROFILE_PIC, LOGOUT_USER, LOAD_USER, USER_LOADED, ERROR_LOADING_USER, RESET_USER_REDUCER } from '../actions/userAction'
 
 
 const initialState = {
@@ -27,6 +27,8 @@ export default function userReducer(state = initialState, { type, payload }) {
         case ERROR_LOADING_USER:
             return { ...state, isLoadingUser: payload.isLoadingUser }
         case LOGOUT_USER:
+            return initialState
+        case RESET_USER_REDUCER:
             return initialState
         default:
             return state;
