@@ -20,6 +20,10 @@ export default class StepsToUse extends Component {
     this.animateStepsToConvert();
   }
 
+  componentWillUnmount() {
+    this.stepsToConvert.removeAllListeners();
+  }
+
   stepsToConvert = new Animated.Value(this.props.stepsToConvert);
 
   animateStepsToConvert = () => {
