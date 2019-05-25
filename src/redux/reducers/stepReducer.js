@@ -11,7 +11,7 @@ const initialState = {
     loadingStepAvgSatus: 'not loaded'
 }
 
-const logOutState =  {
+const logOutState = {
     steps: 0,
     convertedSteps: 0,
     conStepStatus: 'not fetched',
@@ -35,7 +35,14 @@ export default function stepReducer(state = initialState, { type, payload }) {
         case ERROR_SYNC_TO_FIREBASE:
             return { ...state, isSyncing: payload.isSyncing };
         case UPDATE_STEPS_STATE:
-            return { ...state, steps: payload.steps, convertedSteps: payload.convertedSteps, lastSync: payload.lastSync };
+            return {
+                ...state,
+                steps: payload.steps,
+                convertedSteps: payload.convertedSteps,
+                lastSync: payload.lastSync,
+                stepsToConvert: payload.stepsToConvert,
+                stepsToAnimate: payload.stepsToAnimate
+            };
         case REQUEST_CONVERTED_STEPS:
             return { ...state, conStepStatus: payload.conStepStatus };
         case RECIEVE_CONVERTED_STEPS:
@@ -68,7 +75,7 @@ export default function stepReducer(state = initialState, { type, payload }) {
         case ERROR_LOADING_STEP_AVG:
             return { ...state, loadingStepAvgSatus: payload.loadingStepAvgSatus };
         case RESET_STEPS:
-            return {...state,logOutState};
+            return { ...state, logOutState };
 
 
         default:

@@ -70,7 +70,7 @@ class StepScreen extends Component {
 
   animateStepsToUseTickerValue = () => {
     Animated.timing(this.stepsToUseTickerValue, {
-      toValue: this.state.diff,
+      toValue: this.props.stepInfo.stepsToAnimate,
       duration: 2000
     });
   };
@@ -85,7 +85,7 @@ class StepScreen extends Component {
 
   componentDidMount() {
     if (this.state.stepObserver === null) {
-      store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
+      store.getState().stepInfo.HK.initStepCountObserver({}, () => { });
       let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
         this.fetchStepCountData();
       });
@@ -98,27 +98,19 @@ class StepScreen extends Component {
 
   componentWillReceiveProps(nextProp) {
     if (nextProp.screen === "steps") {
-      // Loads converted steps if app is reloaded
 
-      if (this.state.stepsToConvert === undefined) {
-        this.props.loadConvertedSteps(this.props.user.uid);
-        this.setState({
-          stepsToConvert:
-            this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
-        });
-      }
-
-      // Reloads stats, outdatedHistory is set as true when user converts steps
-      if (this.state.outdatedHistory) {
+      if(this.state.outdatedHistory){
         this.props.fetchStepsFromPeriod(this.props.user.uid);
-        this.setState({ outdatedHistory: false });
+        this.setState({outdatedHistory: false})
       }
 
       // Performs initial fetch of steps if user logs out and reloads app
       if (!this.state.initialStepFetch && this.props.stepInfo.steps === 0) {
+        console.log("Reach!")
         this.fetchStepCountData();
         this.setState({ initialStepFetch: true });
       }
+    
     }
   }
 
@@ -126,23 +118,16 @@ class StepScreen extends Component {
     this.state.stepObserver.remove();
   }
 
-  componentWillUpdate() {
-    if (this.state.stepsToConvert === undefined) {
-      this.setState({
-        stepsToConvert:
-          this.props.stepInfo.steps - this.props.stepInfo.convertedSteps
-      });
-    }
-  }
 
   convertSteps = () => {
     /* DO SOMETHING WITH THE STEPS */
-    console.log("CONVERTED: ", this.state.stepsToConvert, " STEPS");
+    console.log("CONVERTED: ", this.props.stepInfo.stepsToConvert, " STEPS");
 
     // Uppdaterar Redux state
     this.props.updateStepState(
       this.props.stepInfo.steps,
-      this.props.stepInfo.steps
+      this.props.stepInfo.steps,
+      0, this.props.stepInfo.stepsToAnimate
     );
 
     // Uppdaterar Firebase
@@ -154,8 +139,7 @@ class StepScreen extends Component {
     };
     this.props.syncStepsToFirebase(inputObj);
 
-    // update state that new history fetch is needed, also zeroes stepsToConvert
-    this.setState({ outdatedHistory: true, stepsToConvert: 0 });
+    this.setState({outdatedHistory: true})
   };
 
   fetchStepCountData = () => {
@@ -166,35 +150,15 @@ class StepScreen extends Component {
         this.setState({ error: err.message });
       } else {
         let steps = Math.round(results.value);
-
+      
         // Jämför redux med nuvarande
         if (this.props.stepInfo.steps !== steps) {
-          // ----------------------------------------------------------
-          // HÄR KAN EN ANIMATION GÖRAS MED SKILLNADEN PÅ STEPS I LOKALA STATE OCH REDUX INNAN DE SYNKAS
-          let diff = steps - this.props.stepInfo.steps;
-          this.setState({ diff });
-          console.log("Difference to animate: ", diff);
-          // ----------------------------------------------------------
-
-          // Update steps to convert
-          this.setState({
-<<<<<<< HEAD
-            stepsToConvert: steps - this.props.stepInfo.convertedSteps, isFetchingSteps: false
-          })
-=======
-            stepsToConvert: steps - this.props.stepInfo.convertedSteps
-          });
->>>>>>> aa472481c3caabc61c1cdcfb197733c03f351b86
+          
+          let stepsToAnimate = (steps - this.props.stepInfo.steps);
+          let stepsToConvert = (steps - this.props.stepInfo.convertedSteps);
 
           // Uppdaterar Redux
-          this.props.updateStepState(steps, this.props.stepInfo.convertedSteps);
-
-          console.log(
-            "STEPS: ",
-            steps,
-            " converted steps: ",
-            this.props.stepInfo.convertedSteps
-          );
+          this.props.updateStepState(steps, this.props.stepInfo.convertedSteps, stepsToConvert, stepsToAnimate);
 
           // Uppdaterar Firebase
           let inputObj = {
@@ -205,6 +169,16 @@ class StepScreen extends Component {
           };
           this.props.syncStepsToFirebase(inputObj);
         }
+
+        if (this.props.stepInfo.stepsToConvert === undefined){
+          
+          let stepsToAnimate = (steps - this.props.stepInfo.steps);
+          let stepsToConvert = (steps - this.props.stepInfo.convertedSteps)
+
+          this.props.updateStepState(steps, this.props.stepInfo.convertedSteps, stepsToConvert, stepsToAnimate);
+        }
+
+        this.setState({isFetchingSteps: false})
       }
     });
   };
@@ -270,9 +244,9 @@ class StepScreen extends Component {
           </TouchableOpacity>
         </View>
 
-        <StepsToUse stepsToConvert={this.state.stepsToConvert} />
+        <StepsToUse stepsToConvert={this.props.stepInfo.stepsToConvert} />
 
-        <Text style={styles.stepFont}>{this.state.stepsToConvert}</Text>
+        <Text style={styles.stepFont}>{this.props.stepInfo.stepsToConvert}</Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>
 
         <Text style={styles.avgFont}>
@@ -317,8 +291,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     initAppleHK: dispatch(initAppleHK),
-    updateStepState: (steps, converted) =>
-      dispatch(updateStepState(steps, converted)),
+    updateStepState: (steps, converted, toConvert, toAnimate) =>
+      dispatch(updateStepState(steps, converted, toConvert, toAnimate)),
     syncStepsToFirebase: ownProps => dispatch(syncStepsToFirebase(ownProps)),
     loadConvertedSteps: ownProps => dispatch(loadConvertedSteps(ownProps)),
     fetchStepsFromPeriod: uid => dispatch(fetchStepsFromPeriod(uid)),

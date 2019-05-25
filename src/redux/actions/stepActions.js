@@ -142,12 +142,14 @@ export function loadConvertedSteps(uid) {
     }
 }
 
-export function updateStepState(steps, converted) {
+export function updateStepState(steps, converted, toConvert, toAnimate) {
     return {
         type: UPDATE_STEPS_STATE,
         payload: {
             steps: steps,
-            convertedSteps: converted
+            convertedSteps: converted,
+            stepsToConvert: toConvert,
+            stepsToAnimate: toAnimate
         }
     }
 }

@@ -36,6 +36,8 @@ class RegisterScreen extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.user.uid !== "" && nextProps.stepInfo.stepAvgStatus === "not set") {
+            console.log("REACH!")
+            console.log(nextProps)
             this.props.saveStepAvg(nextProps.user.uid)
         }
         if(nextProps.stepInfo.stepAvgStatus === "done")  
