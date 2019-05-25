@@ -26,7 +26,8 @@ class LoginScreen extends Component {
 
     componentWillReceiveProps(nextProp) {
         if (nextProp.user.uid !== "") {
-            this.props.navigation.navigate("StepScreen")
+            this.props.switchScreen('splash')
+            this.props.navigation.navigate("SplashScreen")
         }
     }
 

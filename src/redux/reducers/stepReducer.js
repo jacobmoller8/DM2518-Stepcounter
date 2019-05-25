@@ -75,7 +75,7 @@ export default function stepReducer(state = initialState, { type, payload }) {
         case ERROR_LOADING_STEP_AVG:
             return { ...state, loadingStepAvgSatus: payload.loadingStepAvgSatus };
         case RESET_STEPS:
-            return { ...state, logOutState };
+            return { HK: state.HK, ...logOutState };
 
 
         default:
