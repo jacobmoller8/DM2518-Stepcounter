@@ -3,7 +3,7 @@ import firebase from 'firebase';
 import 'firebase/firestore'
 import AppleHealthKit from 'rn-apple-healthkit';
 import BackgroundTask from 'react-native-background-task'
-import {switchScreen} from '../actions/screenActions'
+import { switchScreen } from '../actions/screenActions'
 
 export const INIT_APPLE_HK = "INIT_APPLE_HK";
 export const ERROR_INIT_APPLE_HK = "ERROR_INIT_APPLE_HK";
@@ -32,6 +32,8 @@ export const ERROR_STEP_AVG = "ERROR_STEP_AVG"
 export const LOAD_STEP_AVG = "LOAD_STEP_AVG"
 export const STEP_AVG_LOADED = "STEP_AVG_LOADED"
 export const ERROR_LOADING_STEP_AVG = "ERROR_LOADING_STEP_AVG"
+
+export const RESET_STEP_REDUCER = "RESET_STEP_REDUCER"
 
 export function initAppleHK() {
     let options = {
@@ -216,46 +218,46 @@ export function fetchStepsFromPeriod(uid) {
 export function saveStepAvg(uid) {
     let db = firebase.firestore()
 
-    var calcAVG = new Promise(function(resolve, reject) {
-    var lastMonth = new Date();
+    var calcAVG = new Promise(function (resolve, reject) {
+        var lastMonth = new Date();
 
-    var prevDate = lastMonth.getDate() - 30;
-    lastMonth.setDate(prevDate);
+        var prevDate = lastMonth.getDate() - 30;
+        lastMonth.setDate(prevDate);
 
-    let options = {
-        startDate: lastMonth.toISOString()
-    };
+        let options = {
+            startDate: lastMonth.toISOString()
+        };
 
-    let sum = 0;
-    let counter = 0;
+        let sum = 0;
+        let counter = 0;
 
-    store.getState().stepInfo.HK.getDailyStepCountSamples(options, (err, results) => {
-        if (err) {
-            dispatch({
-                type: ERROR_STEP_AVG,
-                payload: { stepAvgStatus: err }
-            })
-        } else {
-            results.forEach(function (item) {
-                sum += item.value;
-                counter += 1;
-            });
-            resolve(Math.round(sum / counter))
+        store.getState().stepInfo.HK.getDailyStepCountSamples(options, (err, results) => {
+            if (err) {
+                dispatch({
+                    type: ERROR_STEP_AVG,
+                    payload: { stepAvgStatus: err }
+                })
+            } else {
+                results.forEach(function (item) {
+                    sum += item.value;
+                    counter += 1;
+                });
+                resolve(Math.round(sum / counter))
 
-        }
+            }
 
-    })
-    let curDate = new Date();
-    
-      });
-      
+        })
+        let curDate = new Date();
+
+    });
+
 
     return dispatch => {
         dispatch({
             type: SET_STEP_AVG,
             payload: { stepAvgStatus: 'calculating' }
         })
-        calcAVG.then((res)=>{
+        calcAVG.then((res) => {
             db.collection("users").doc(uid).set({
                 stepAvg: res
             }, { merge: true })
@@ -272,7 +274,7 @@ export function saveStepAvg(uid) {
                         payload: { stepAvgStatus: error }
                     })
                 });
-        }).catch((err)=>{
+        }).catch((err) => {
             dispatch({
                 type: ERROR_STEP_AVG,
                 payload: { stepAvgStatus: err }
@@ -320,5 +322,14 @@ export function resetSteps() {
     store.dispatch(switchScreen('login'))
     return {
         type: RESET_STEPS
+    }
+}
+
+export function resetStepReducer() {
+    return dispatch => {
+        dispatch({
+            type: RESET_STEP_REDUCER
+        })
+
     }
 }
