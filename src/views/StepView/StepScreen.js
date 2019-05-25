@@ -105,12 +105,21 @@ class StepScreen extends Component {
       this.state.appState.match("/inactive||background/") &&
       nextAppState === "active"
     ) {
-      this.props.switchScreen("splash");
-      this.props.navigation.navigate("SplashScreen");
+      this.onMinimize(this.navigateToSplash())
     }
 
     this.setState({ appState: nextAppState });
   };
+
+
+  onMinimize = (callback) => {
+    this.props.switchScreen("splash");
+    callback
+  }
+
+  navigateToSplash = () => {
+    this.props.navigation.navigate("SplashScreen");
+  }
 
   componentWillReceiveProps(nextProp) {
     if (nextProp.screen === "steps") {
