@@ -174,7 +174,7 @@ class StepScreen extends Component {
 
           // Update steps to convert
           this.setState({
-            stepsToConvert: steps - this.props.stepInfo.convertedSteps
+            stepsToConvert: steps - this.props.stepInfo.convertedSteps, isFetchingSteps: false
           })
 
           // Uppdaterar Redux
