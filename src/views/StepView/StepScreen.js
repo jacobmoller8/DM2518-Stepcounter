@@ -11,7 +11,8 @@ import {
   Image,
   SafeAreaView,
   Animated,
-  StatusBar
+  StatusBar,
+  AppState
 } from "react-native";
 import { withNavigation } from "react-navigation";
 import { connect } from "react-redux";
@@ -62,7 +63,8 @@ class StepScreen extends Component {
       isFetchingSteps: false,
       initialStepFetch: false,
       outdatedHistory: false,
-      diff: null
+      diff: null,
+      appState: AppState.currentState
     };
   }
 
@@ -84,6 +86,8 @@ class StepScreen extends Component {
   }
 
   componentDidMount() {
+    AppState.addEventListener("change", this.handleAppStateChange);
+
     if (this.state.stepObserver === null) {
       store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
       let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
@@ -95,6 +99,18 @@ class StepScreen extends Component {
     BackgroundTask.schedule();
     this.animateStepsToUseTickerValue();
   }
+
+  handleAppStateChange = nextAppState => {
+    if (
+      this.state.appState.match("/inactive||background/") &&
+      nextAppState === "active"
+    ) {
+      this.props.switchScreen("splash");
+      this.props.navigation.navigate("SplashScreen");
+    }
+
+    this.setState({ appState: nextAppState });
+  };
 
   componentWillReceiveProps(nextProp) {
     if (nextProp.screen === "steps") {
@@ -124,6 +140,7 @@ class StepScreen extends Component {
 
   componentWillUnmount() {
     this.state.stepObserver.remove();
+    AppState.removeEventListener("change", this.handleAppStateChange);
   }
 
   componentWillUpdate() {
@@ -178,13 +195,8 @@ class StepScreen extends Component {
 
           // Update steps to convert
           this.setState({
-<<<<<<< HEAD
-            stepsToConvert: steps - this.props.stepInfo.convertedSteps, isFetchingSteps: false
-          })
-=======
             stepsToConvert: steps - this.props.stepInfo.convertedSteps
           });
->>>>>>> aa472481c3caabc61c1cdcfb197733c03f351b86
 
           // Uppdaterar Redux
           this.props.updateStepState(steps, this.props.stepInfo.convertedSteps);
