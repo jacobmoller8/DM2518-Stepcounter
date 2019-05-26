@@ -283,7 +283,7 @@ class StepScreen extends Component {
 
     return (
       <SafeAreaView style={styles.flexView}>
-        <View style={{ height: 135 }}>
+        <View style={{ height: 115 }}>
           <Header
             currentSteps={this.props.stepInfo.steps}
             lastStepValue={this.props.stepInfo.stepsToAnimate}
@@ -306,16 +306,6 @@ class StepScreen extends Component {
         </View>
 
         <StepsToUse stepsToConvert={this.props.stepInfo.stepsToConvert} />
-
-        <Text style={styles.stepFont}>
-          {this.props.stepInfo.stepsToConvert}
-        </Text>
-        <Text style={styles.stepsToUseLabel}>steps to use</Text>
-
-        <Text style={styles.avgFont}>
-          Daily Average: {this.props.stepInfo.stepAvg}
-        </Text>
-        <Text style={curStyle}>Status: {this.state.error}</Text>
 
         <TouchableOpacity
           style={styles.compensateButton}
@@ -408,9 +398,9 @@ const styles = StyleSheet.create({
     shadowRadius: 1
   },
   picture: {
-    height: 70,
-    width: 70,
-    borderRadius: 35
+    height: 64,
+    width: 64,
+    borderRadius: 32
   },
   line1: {
     width: 10,
@@ -476,3 +466,15 @@ const styles = StyleSheet.create({
     marginRight: 10
   }
 });
+
+/*
+<Text style={styles.stepFont}>
+          {this.props.stepInfo.stepsToConvert}
+        </Text>
+        <Text style={styles.stepsToUseLabel}>steps to use</Text>
+
+        <Text style={styles.avgFont}>
+          Daily Average: {this.props.stepInfo.stepAvg}
+        </Text>
+        <Text style={curStyle}>Status: {this.state.error}</Text>
+*/

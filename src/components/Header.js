@@ -16,7 +16,7 @@ export default class Header extends Component {
     this.state = {
       value: 0,
       handelingNewSteps: false,
-      oldProps: null
+      oldProps: {}
     };
   }
 
@@ -105,7 +105,7 @@ export default class Header extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={{ color: "#505050", fontSize: 25 }}>
+        <Text style={{ color: "#505050", fontSize: 25, marginTop: 7 }}>
           {this.props.date} {this.props.month}
         </Text>
         <View style={styles.progressBar}>
@@ -133,7 +133,7 @@ export default class Header extends Component {
             fontSize: 10,
             color: "white",
             position: "absolute",
-            marginTop: 70
+            marginTop: 76
           }}
         >
           steps today
@@ -191,6 +191,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     position: "absolute",
-    marginTop: 40
+    marginTop: 45
   }
 });

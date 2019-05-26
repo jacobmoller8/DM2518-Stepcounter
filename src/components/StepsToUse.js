@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, Animated } from "react-native";
+import { View, Text, Animated, StyleSheet } from "react-native";
 
 export default class StepsToUse extends Component {
   constructor(props) {
@@ -41,10 +41,30 @@ export default class StepsToUse extends Component {
 
   render() {
     return (
-      <View>
-        <Text>{this.props.stepsToConvert}</Text>
-        <Text>steps to use</Text>
+      <View style={styles.container}>
+        <View
+          style={{
+            backgroundColor: "#FFF",
+            flexDirection: "column",
+            alignItems: "center"
+          }}
+        >
+          <Text style={{ fontSize: 90, color: "#4563A8" }}>
+            {this.props.stepsToConvert}
+          </Text>
+          <Text style={{ fontSize: 20, color: "#707070" }}>steps to use</Text>
+        </View>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: "#FFF",
+    marginTop: 50
+  }
+});
