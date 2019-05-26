@@ -124,9 +124,9 @@ class StepScreen extends Component {
   componentWillReceiveProps(nextProp) {
     if (nextProp.screen === "steps") {
 
-      if(this.state.outdatedHistory){
+      if (this.state.outdatedHistory) {
         this.props.fetchStepsFromPeriod(this.props.user.uid);
-        this.setState({outdatedHistory: false})
+        this.setState({ outdatedHistory: false })
       }
 
       // Performs initial fetch of steps if user logs out and reloads app
@@ -135,7 +135,7 @@ class StepScreen extends Component {
         this.fetchStepCountData();
         this.setState({ initialStepFetch: true });
       }
-    
+
     }
   }
 
@@ -165,7 +165,7 @@ class StepScreen extends Component {
     };
     this.props.syncStepsToFirebase(inputObj);
 
-    this.setState({outdatedHistory: true})
+    this.setState({ outdatedHistory: true })
   };
 
   fetchStepCountData = () => {
@@ -176,16 +176,22 @@ class StepScreen extends Component {
         this.setState({ error: err.message });
       } else {
         let steps = Math.round(results.value);
-      
+
         // Jämför redux med nuvarande
-        if (this.props.stepInfo.steps !== steps) {
-          
-          let stepsToAnimate = (steps - this.props.stepInfo.steps);
-          let stepsToConvert = (steps - this.props.stepInfo.convertedSteps);
 
-          // Uppdaterar Redux
-          this.props.updateStepState(steps, this.props.stepInfo.convertedSteps, stepsToConvert, stepsToAnimate);
 
+        if (steps !== this.props.stepInfo.steps) {
+          // If steps is less than the value stored in redux, a new day is started and converted steps is set to 0
+          if (steps < this.props.stepInfo.steps) {
+            this.props.updateStepState(steps, 0, steps, steps);
+          } else if (steps > this.props.stepInfo.steps) {
+
+            let stepsToAnimate = (steps - this.props.stepInfo.steps);
+            let stepsToConvert = (steps - this.props.stepInfo.convertedSteps);
+
+            // Uppdaterar Redux
+            this.props.updateStepState(steps, this.props.stepInfo.convertedSteps, stepsToConvert, stepsToAnimate);
+          }
           // Uppdaterar Firebase
           let inputObj = {
             uid: this.props.user.uid,
@@ -196,16 +202,17 @@ class StepScreen extends Component {
           this.props.syncStepsToFirebase(inputObj);
         }
 
-        if (this.props.stepInfo.stepsToConvert === undefined){
-          
+        if (this.props.stepInfo.stepsToConvert === undefined) {
+
           let stepsToAnimate = (steps - this.props.stepInfo.steps);
           let stepsToConvert = (steps - this.props.stepInfo.convertedSteps)
 
           this.props.updateStepState(steps, this.props.stepInfo.convertedSteps, stepsToConvert, stepsToAnimate);
         }
 
-        this.setState({isFetchingSteps: false})
+        this.setState({ isFetchingSteps: false })
       }
+
     });
   };
 
