@@ -87,7 +87,8 @@ class SplashScreen extends Component {
                 this.props.navigation.navigate("StepScreen");
                 this.props.switchScreen("steps");
             }
-        }
+        }else if (nextProp.user.uid === "" && nextProp.screen === "splash"){
+            this.setState({userLoaded: false})}
     }
 
     checkIfAuthorized = () => {
@@ -100,6 +101,7 @@ class SplashScreen extends Component {
                     that.props.loadUser(user.uid);
                 }
             } else {
+                that.props.switchScreen("login")
                 that.props.navigation.navigate("LoginScreen");
                 console.log("No account connected");
             }
