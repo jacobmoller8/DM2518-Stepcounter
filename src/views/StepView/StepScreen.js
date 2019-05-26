@@ -101,14 +101,16 @@ class StepScreen extends Component {
   }
 
   handleAppStateChange = nextAppState => {
-    if (
-      this.state.appState.match("/inactive||background/") &&
-      nextAppState === "active"
-    ) {
-      this.onMinimize(this.navigateToSplash())
-    }
+    if (this.props.screen === "steps") {
+      if (
+        this.state.appState.match("/inactive||background/") &&
+        nextAppState === "active"
+      ) {
+        this.onMinimize(this.navigateToSplash())
+      }
 
-    this.setState({ appState: nextAppState });
+      this.setState({ appState: nextAppState });
+    }
   };
 
 
@@ -182,6 +184,7 @@ class StepScreen extends Component {
 
         if (steps !== this.props.stepInfo.steps) {
           // If steps is less than the value stored in redux, a new day is started and converted steps is set to 0
+          // TODO: Better check or reset in case of new day
           if (steps < this.props.stepInfo.steps) {
             this.props.updateStepState(steps, 0, steps, steps);
           } else if (steps > this.props.stepInfo.steps) {
