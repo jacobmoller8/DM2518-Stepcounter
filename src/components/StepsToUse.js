@@ -14,10 +14,14 @@ export default class StepsToUse extends Component {
     this.stepsToConvert.addListener(newvalue => {
       this.setState({ value: Math.floor(newvalue.value) });
     });
+    this.animateStepsToConvert();
   }
 
-  componentWillReceiveProps() {
-    this.animateStepsToConvert();
+  componentWillReceiveProps(newProps) {
+    const oldProps = this.props;
+    if (newProps.stepsToConvert !== oldProps.stepsToConvert) {
+      this.animateStepsToConvert();
+    }
   }
 
   componentWillUnmount() {

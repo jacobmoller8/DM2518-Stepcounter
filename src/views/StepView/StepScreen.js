@@ -12,7 +12,8 @@ import {
   SafeAreaView,
   Animated,
   StatusBar,
-  AppState
+  AppState,
+  Vibration
 } from "react-native";
 import { withNavigation } from "react-navigation";
 import { connect } from "react-redux";
@@ -86,10 +87,10 @@ class StepScreen extends Component {
   }
 
   componentDidMount() {
-    AppState.addEventListener("change", this.handleAppStateChange);
+    //AppState.addEventListener("change", this.handleAppStateChange);
 
     if (this.state.stepObserver === null) {
-      store.getState().stepInfo.HK.initStepCountObserver({}, () => { });
+      store.getState().stepInfo.HK.initStepCountObserver({}, () => {});
       let sub = NativeAppEventEmitter.addListener("change:steps", evt => {
         this.fetchStepCountData();
       });
@@ -105,37 +106,34 @@ class StepScreen extends Component {
       this.state.appState.match("/inactive||background/") &&
       nextAppState === "active"
     ) {
-      this.onMinimize(this.navigateToSplash())
+      this.onMinimize(this.navigateToSplash());
     }
 
     this.setState({ appState: nextAppState });
   };
 
-
-  onMinimize = (callback) => {
+  onMinimize = callback => {
     this.props.switchScreen("splash");
-    callback
-  }
+    callback;
+  };
 
   navigateToSplash = () => {
     this.props.navigation.navigate("SplashScreen");
-  }
+  };
 
   componentWillReceiveProps(nextProp) {
     if (nextProp.screen === "steps") {
-
-      if(this.state.outdatedHistory){
+      if (this.state.outdatedHistory) {
         this.props.fetchStepsFromPeriod(this.props.user.uid);
-        this.setState({outdatedHistory: false})
+        this.setState({ outdatedHistory: false });
       }
 
       // Performs initial fetch of steps if user logs out and reloads app
       if (!this.state.initialStepFetch && this.props.stepInfo.steps === 0) {
-        console.log("Reach!")
+        console.log("Reach!");
         this.fetchStepCountData();
         this.setState({ initialStepFetch: true });
       }
-    
     }
   }
 
@@ -144,16 +142,17 @@ class StepScreen extends Component {
     AppState.removeEventListener("change", this.handleAppStateChange);
   }
 
-
   convertSteps = () => {
     /* DO SOMETHING WITH THE STEPS */
+    Vibration.vibrate();
     console.log("CONVERTED: ", this.props.stepInfo.stepsToConvert, " STEPS");
 
     // Uppdaterar Redux state
     this.props.updateStepState(
       this.props.stepInfo.steps,
       this.props.stepInfo.steps,
-      0, this.props.stepInfo.stepsToAnimate
+      0,
+      this.props.stepInfo.stepsToAnimate
     );
 
     // Uppdaterar Firebase
@@ -165,7 +164,7 @@ class StepScreen extends Component {
     };
     this.props.syncStepsToFirebase(inputObj);
 
-    this.setState({outdatedHistory: true})
+    this.setState({ outdatedHistory: true });
   };
 
   fetchStepCountData = () => {
@@ -176,15 +175,28 @@ class StepScreen extends Component {
         this.setState({ error: err.message });
       } else {
         let steps = Math.round(results.value);
-      
+
+        if (this.props.stepInfo.steps === steps) {
+          this.props.updateStepState(
+            steps,
+            this.props.stepInfo.convertedSteps,
+            this.props.stepInfo.stepsToConvert,
+            steps
+          );
+        }
+
         // Jämför redux med nuvarande
         if (this.props.stepInfo.steps !== steps) {
-          
-          let stepsToAnimate = (steps - this.props.stepInfo.steps);
-          let stepsToConvert = (steps - this.props.stepInfo.convertedSteps);
+          let stepsToAnimate = this.props.stepInfo.steps;
+          let stepsToConvert = steps - this.props.stepInfo.convertedSteps;
 
           // Uppdaterar Redux
-          this.props.updateStepState(steps, this.props.stepInfo.convertedSteps, stepsToConvert, stepsToAnimate);
+          this.props.updateStepState(
+            steps,
+            this.props.stepInfo.convertedSteps,
+            stepsToConvert,
+            stepsToAnimate
+          );
 
           // Uppdaterar Firebase
           let inputObj = {
@@ -196,15 +208,19 @@ class StepScreen extends Component {
           this.props.syncStepsToFirebase(inputObj);
         }
 
-        if (this.props.stepInfo.stepsToConvert === undefined){
-          
-          let stepsToAnimate = (steps - this.props.stepInfo.steps);
-          let stepsToConvert = (steps - this.props.stepInfo.convertedSteps)
+        if (this.props.stepInfo.stepsToConvert === undefined) {
+          let stepsToAnimate = this.props.stepInfo.steps;
+          let stepsToConvert = steps - this.props.stepInfo.convertedSteps;
 
-          this.props.updateStepState(steps, this.props.stepInfo.convertedSteps, stepsToConvert, stepsToAnimate);
+          this.props.updateStepState(
+            steps,
+            this.props.stepInfo.convertedSteps,
+            stepsToConvert,
+            stepsToAnimate
+          );
         }
 
-        this.setState({isFetchingSteps: false})
+        this.setState({ isFetchingSteps: false });
       }
     });
   };
@@ -251,7 +267,7 @@ class StepScreen extends Component {
         <View style={{ height: 135 }}>
           <Header
             currentSteps={this.props.stepInfo.steps}
-            lastStepValue={this.state.diff}
+            lastStepValue={this.props.stepInfo.stepsToAnimate}
             lastConvertedSteps={200}
             date={this.state.date}
             month={this.state.month}
@@ -272,7 +288,9 @@ class StepScreen extends Component {
 
         <StepsToUse stepsToConvert={this.props.stepInfo.stepsToConvert} />
 
-        <Text style={styles.stepFont}>{this.props.stepInfo.stepsToConvert}</Text>
+        <Text style={styles.stepFont}>
+          {this.props.stepInfo.stepsToConvert}
+        </Text>
         <Text style={styles.stepsToUseLabel}>steps to use</Text>
 
         <Text style={styles.avgFont}>

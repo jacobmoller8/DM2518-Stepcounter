@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, Dimensions, Animated } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Animated,
+  Vibration
+} from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -7,7 +14,9 @@ export default class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: 0
+      value: 0,
+      handelingNewSteps: false,
+      oldProps: null
     };
   }
 
@@ -15,23 +24,52 @@ export default class Header extends Component {
     this.newStepsTicking.addListener(newvalue =>
       this.setState({ value: Math.floor(newvalue.value) })
     );
+
+    this.animateNewStepsTicking();
+    this.animateValue();
   }
 
   componentWillUnmount() {
     this.newStepsTicking.removeAllListeners();
   }
 
-  componentWillReceiveProps() {
-    this.animateNewStepsTicking();
-    this.animateValue();
+  shouldComponentUpdate() {
+    if (this.handelingNewSteps === true) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  componentWillReceiveProps(newProps) {
+    const oldProps = this.props;
+    if (newProps.currentSteps !== oldProps.currentSteps) {
+      this.setState({ handelingNewSteps: true, oldProps });
+      alert(
+        "new steps: " + (this.props.currentSteps - this.props.lastStepValue)
+      );
+      alert(
+        "Oldprops:" + (newProps.currentSteps - this.state.oldProps.currentSteps)
+      );
+
+      this.animateNewStepsTicking();
+      this.animateValue();
+    } else {
+    }
   }
 
   newStepsToUse = new Animated.Value(0);
 
-  newStepsTicking = new Animated.Value(this.props.lastStepValue);
+  newStepsTicking = new Animated.Value(
+    this.props.lastStepValue !== undefined ? this.props.lastStepValue : 0
+  );
 
   progressWidth = new Animated.Value(
-    Math.floor((this.props.lastStepValue / 10000) * (screenWidth * 0.94))
+    Math.floor(
+      ((this.props.lastStepValue !== undefined ? this.props.lastStepValue : 0) /
+        10000) *
+        (screenWidth * 0.92)
+    )
   );
 
   animateValue = () => {
@@ -59,7 +97,9 @@ export default class Header extends Component {
           duration: 3000
         })
       ])
-    ]).start();
+    ]).start(() => {
+      this.setState({ handelingNewSteps: false });
+    });
   };
 
   render() {
@@ -70,7 +110,12 @@ export default class Header extends Component {
         </Text>
         <View style={styles.progressBar}>
           <Animated.View
-            style={[styles.progressContainer, { width: this.progressWidth }]}
+            style={[
+              styles.progressContainer,
+              {
+                width: this.progressWidth !== undefined ? this.progressWidth : 0
+              }
+            ]}
           />
         </View>
         <View style={styles.barStepText}>
