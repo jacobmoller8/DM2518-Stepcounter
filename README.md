@@ -1,21 +1,22 @@
-# DM2518-Stepcounter
+# DM2518-StepApp
 
-## Modules
+Jacob Möller, Hugo Bergqvist, Björn Andersson 
+2019
 
-"npm install xxx" i terminalen
+## Folder Structure
 
-- react-navigation
-- firebase
-- react-native-gesture-handler
-- react-native-vector-icons
-- react-redux
-- redux
-- redux-persist
-- redux-thunk
-- react-native-animated-bar
-- react-native-background-task
-- react-native-background-fetch@2.0.x
-- react-native-camera-roll-picker (https://github.com/jeanpan/react-native-camera-roll-picker#readme)
+### Assets
+- Pictures
+
+### Components
+- Components used in views
+
+### redux
+- Actions
+- Reducers
+- Store
+
+### Views
+- All screens
 
 
-"react-native link" i terminalen
